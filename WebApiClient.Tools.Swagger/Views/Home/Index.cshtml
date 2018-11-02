@@ -2,6 +2,7 @@
     ViewData["Title"] = "Home Page";
 
     var controllers = Model.GetControllers();
+    var modelCodes = Model.GetModelsCode().Split(Environment.NewLine);
 }
 @model Swagger
 
@@ -56,13 +57,17 @@
                 }
 
                 <span>@parameter.TypeInControllerInterface</span>
-                <span>@parameter.VariableName@(parameter.IsLast ? ");" : ",") </span>
+                <span>@parameter.VariableName@(parameter.IsLast ? null : ",") </span>
             }
+            <span>);</span>
         </div>
     }
     <div>}</div>
-
-    <div>
-        <pre>@Html.Raw(Model.GetModelsCode())</pre>
-    </div>
 }
+
+<div>
+    @foreach (var line in modelCodes)
+    {
+        <div>@line</div>
+    }
+</div>

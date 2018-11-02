@@ -3,7 +3,10 @@ using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.CSharp.Models;
+using System;
 using System.Collections.Generic;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -35,7 +38,6 @@ namespace WebApiClient.Tools.Swagger
         }
 
 
-
         private class Generator : SwaggerToCSharpControllerGenerator
         {
             private readonly SwaggerDocument document;
@@ -54,7 +56,8 @@ namespace WebApiClient.Tools.Swagger
             public string GetDtoModelsCode()
             {
                 var generator = new CSharpGenerator(this.document, this.setting.CSharpGeneratorSettings, (CSharpTypeResolver)this.Resolver);
-                return generator.GenerateTypes().Concatenate();
+                var codes = generator.GenerateTypes().Concatenate();
+                return new WebApiClientModels(codes).ToString();
             }
 
             public CSharpControllerTemplateModel[] GetCSharpControllerTemplateModels()
@@ -79,23 +82,66 @@ namespace WebApiClient.Tools.Swagger
             {
                 return new WebApiClientOperationModel(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
+        }
 
-            private class WebApiClientOperationModel : CSharpOperationModel
+        private class WebApiClientOperationModel : CSharpOperationModel
+        {
+            public WebApiClientOperationModel(SwaggerOperation operation, SwaggerToCSharpGeneratorSettings settings, SwaggerToCSharpGeneratorBase generator, CSharpTypeResolver resolver)
+                : base(operation, settings, generator, resolver)
             {
-                public WebApiClientOperationModel(SwaggerOperation operation, SwaggerToCSharpGeneratorSettings settings, SwaggerToCSharpGeneratorBase generator, CSharpTypeResolver resolver)
-                    : base(operation, settings, generator, resolver)
-                {
-                }
+            }
 
-                public override string ResultType
+            public override string ResultType
+            {
+                get
                 {
-                    get
+                    return SyncResultType == "void"
+                        ? "ITask<HttpResponseMessage>"
+                        : $"ITask<{SyncResultType}>";
+                }
+            }
+        }
+
+        private class WebApiClientModels
+        {
+            private readonly StringBuilder builder = new StringBuilder();
+
+            public WebApiClientModels(string codes)
+            {
+                foreach (var line in codes.Split('\n'))
+                {
+                    var clear = this.Clear(line);
+                    if (clear != null)
                     {
-                        return SyncResultType == "void"
-                            ? "ITask<HttpResponseMessage>"
-                            : "ITask<" + SyncResultType + ">";
+                        builder.AppendLine(clear);
                     }
                 }
+            }
+
+            private string Clear(string line)
+            {
+                if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
+                {
+                    return null;
+                }
+
+                var regex = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")");
+                var match = regex.Match(line);
+                if (match.Success == true)
+                {
+                    return $"    [AliasAs(\"{match.Value}\")]";
+                }
+                else
+                {
+                    line = line.Replace("System.ComponentModel.DataAnnotations.", null);
+                }
+                return line;
+            }
+
+
+            public override string ToString()
+            {
+                return this.builder.ToString();
             }
         }
     }
