@@ -53,8 +53,14 @@ namespace WebApiClient.Tools.Swagger
                     tab = tab - 1;
                 }
 
+                var isEndMethod = line.EndsWith(");");
+                var isEndProperty = line.EndsWith("{ get; set; }");
+
                 var prefix = string.Empty.PadRight(cTab * 4, ' ');
-                var suffix = line.EndsWith(");") ? Environment.NewLine : null;
+                var suffix = isEndMethod || isEndProperty ?
+                    Environment.NewLine :
+                    null;
+
                 builder.AppendLine($"{prefix}{line}{suffix}");
             }
             return builder.ToString();
