@@ -11,6 +11,7 @@ namespace WebApiClient.Tools.Swagger
             var doc = SwaggerDocument.FromJsonAsync(json).Result;
             var swagger = new Swagger(doc);
 
+            swagger.Settings.AspNetNamespace = "xxx.yyy.swagger";
             swagger.GenerateFiles();
 
             Console.ReadLine();

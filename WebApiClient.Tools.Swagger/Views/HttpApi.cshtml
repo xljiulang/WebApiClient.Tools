@@ -61,36 +61,38 @@
                 <parameters>
                     @foreach (var parameter in operation.Parameters)
                     {
-                        if (parameter.IsRequired == true)
-                        {
-                            <span>[Required]</span>
-                        }
-
-                        if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
-                        {
-                            <span>[PathQuery]</span>
-                        }
-                        else if (parameter.Kind == SwaggerParameterKind.Header)
-                        {
-                            <span>[Header("@(parameter.Name)")]</span>
-                        }
-                        else if (parameter.Kind == SwaggerParameterKind.FormData)
-                        {
-                            if (parameter.IsFile == false)
+                        <div>
+                            @if (parameter.IsRequired == true)
                             {
-                                <span>[MulitpartContent]</span>
+                                <span>[Required]</span>
                             }
-                        }
-                        else if (parameter.IsXmlBodyParameter == true)
-                        {
-                            <span>[XmlContent]</span>
-                        }
-                        else if (parameter.Kind == SwaggerParameterKind.Body)
-                        {
-                            <span>[JsonContent]</span>
-                        }
-                        <span>@(parameter.TypeInControllerInterface)</span>
-                        <span>@(parameter.VariableName)@(parameter.IsLast ? null : ",") </span>
+
+                            @if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
+                            {
+                                <span>[PathQuery]</span>
+                            }
+                            else if (parameter.Kind == SwaggerParameterKind.Header)
+                            {
+                                <span>[Header("@(parameter.Name)")]</span>
+                            }
+                            else if (parameter.Kind == SwaggerParameterKind.FormData)
+                            {
+                                if (parameter.IsFile == false)
+                                {
+                                    <span>[MulitpartContent]</span>
+                                }
+                            }
+                            else if (parameter.IsXmlBodyParameter == true)
+                            {
+                                <span>[XmlContent]</span>
+                            }
+                            else if (parameter.Kind == SwaggerParameterKind.Body)
+                            {
+                                <span>[JsonContent]</span>
+                            }
+                            <span>@(parameter.TypeInControllerInterface)</span>
+                            <span>@(parameter.VariableName)@(parameter.IsLast ? null : ",") </span>
+                        </div>
                     }
                 </parameters>
                 <span>);</span>
