@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28010.2036
+VisualStudioVersion = 15.0.27130.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApiClient.Tools.Swagger", "WebApiClient.Tools.Swagger\WebApiClient.Tools.Swagger.csproj", "{B89BA3B6-A0B1-470F-8F26-2256393491DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApiClient.Tools.Swagger", "WebApiClient.Tools.Swagger\WebApiClient.Tools.Swagger.csproj", "{D6A35645-DF24-4410-82DA-2FA221009C98}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{B89BA3B6-A0B1-470F-8F26-2256393491DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B89BA3B6-A0B1-470F-8F26-2256393491DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B89BA3B6-A0B1-470F-8F26-2256393491DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B89BA3B6-A0B1-470F-8F26-2256393491DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6A35645-DF24-4410-82DA-2FA221009C98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A35645-DF24-4410-82DA-2FA221009C98}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A35645-DF24-4410-82DA-2FA221009C98}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A35645-DF24-4410-82DA-2FA221009C98}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

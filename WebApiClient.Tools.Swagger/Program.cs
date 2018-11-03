@@ -1,24 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using NSwag;
+using System;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
 namespace WebApiClient.Tools.Swagger
 {
-    public class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+            var json = File.ReadAllText("v1.json");
+            var doc = SwaggerDocument.FromJsonAsync(json).Result;
+            var swagger = new Swagger(doc);
+            var apis = swagger.GetHttpApis();
+            var cshtml = apis[0].ToString();
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>();
+            Console.WriteLine(cshtml);
+            Console.ReadLine();
+        }
     }
 }

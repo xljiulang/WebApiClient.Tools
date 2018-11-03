@@ -3,7 +3,6 @@ using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.CSharp.Models;
-using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,62 +13,56 @@ namespace WebApiClient.Tools.Swagger
     {
         public SwaggerDocument Document { get; private set; }
 
-        public SwaggerToCSharpControllerGeneratorSettings Settings { get; private set; }
+        public HttpApiSettings Settings { get; private set; }
 
         public Swagger(SwaggerDocument document)
         {
             this.Document = document;
-            this.Settings = new SwaggerToCSharpControllerGeneratorSettings();
-            this.Settings.CSharpGeneratorSettings.ClassStyle = CSharpClassStyle.Poco;
-            this.Settings.CSharpGeneratorSettings.GenerateJsonMethods = false;
-            this.Settings.RouteNamingStrategy = CSharpControllerRouteNamingStrategy.OperationId;
+            this.Settings = new HttpApiSettings();
         }
 
-        public CSharpControllerTemplateModel[] GetControllers()
+        public HttpApi[] GetHttpApis()
         {
-            var g = new Generator(this.Document, this.Settings);
-            return g.GetCSharpControllerTemplateModels();
+            var generator = new Generator(this);
+            return generator.GetHttpApiModels();
         }
 
-        public string GetModelsCode()
+        public string GetModelCodes()
         {
-            var g = new Generator(this.Document, this.Settings);
-            return g.GetDtoModelsCode();
-        }
-
+            var generator = new Generator(this);
+            return generator.GenerateModelCodes();
+        }         
 
         private class Generator : SwaggerToCSharpControllerGenerator
         {
-            private readonly SwaggerDocument document;
-            private readonly SwaggerToCSharpControllerGeneratorSettings setting;
+            private readonly Swagger swagger;
 
-            public List<CSharpControllerTemplateModel> ControllerTemplateModels { get; private set; }
+            private readonly List<HttpApi> httpApiList = new List<HttpApi>();
 
-            public Generator(SwaggerDocument document, SwaggerToCSharpControllerGeneratorSettings setting)
-                : base(document, setting)
+            public Generator(Swagger swagger)
+                : base(swagger.Document, swagger.Settings)
             {
-                this.document = document;
-                this.setting = setting;
-                this.ControllerTemplateModels = new List<CSharpControllerTemplateModel>();
+                this.swagger = swagger;
             }
 
-            public string GetDtoModelsCode()
+            public string GenerateModelCodes()
             {
-                var generator = new CSharpGenerator(this.document, this.setting.CSharpGeneratorSettings, (CSharpTypeResolver)this.Resolver);
+                var generator = new CSharpGenerator(this.swagger.Document, this.swagger.Settings.CSharpGeneratorSettings, (CSharpTypeResolver)this.Resolver);
                 var codes = generator.GenerateTypes().Concatenate();
-                return new WebApiClientModels(codes).ToString();
+                return new CodeCleaner(codes).ToString();
             }
 
-            public CSharpControllerTemplateModel[] GetCSharpControllerTemplateModels()
+            public HttpApi[] GetHttpApiModels()
             {
+                this.httpApiList.Clear();
                 this.GenerateFile();
-                return this.ControllerTemplateModels.ToArray();
+                return this.httpApiList.ToArray();
             }
 
             protected override string GenerateClientClass(string controllerName, string controllerClassName, IList<CSharpOperationModel> operations, ClientGeneratorOutputType outputType)
             {
-                var model = new CSharpControllerTemplateModel(controllerClassName, operations, this.document, Settings);
-                this.ControllerTemplateModels.Add(model);
+                var model = new HttpApi(controllerClassName, operations, this.swagger.Document, this.swagger.Settings);
+                this.httpApiList.Add(model);
                 return string.Empty;
             }
 
@@ -80,33 +73,15 @@ namespace WebApiClient.Tools.Swagger
 
             protected override CSharpOperationModel CreateOperationModel(SwaggerOperation operation, ClientGeneratorBaseSettings settings)
             {
-                return new WebApiClientOperationModel(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
+                return new HttpApiOperation(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
         }
 
-        private class WebApiClientOperationModel : CSharpOperationModel
-        {
-            public WebApiClientOperationModel(SwaggerOperation operation, SwaggerToCSharpGeneratorSettings settings, SwaggerToCSharpGeneratorBase generator, CSharpTypeResolver resolver)
-                : base(operation, settings, generator, resolver)
-            {
-            }
-
-            public override string ResultType
-            {
-                get
-                {
-                    return SyncResultType == "void"
-                        ? "ITask<HttpResponseMessage>"
-                        : $"ITask<{SyncResultType}>";
-                }
-            }
-        }
-
-        private class WebApiClientModels
+        private class CodeCleaner
         {
             private readonly StringBuilder builder = new StringBuilder();
 
-            public WebApiClientModels(string codes)
+            public CodeCleaner(string codes)
             {
                 foreach (var line in codes.Split('\n'))
                 {
@@ -137,7 +112,6 @@ namespace WebApiClient.Tools.Swagger
                 }
                 return line;
             }
-
 
             public override string ToString()
             {
