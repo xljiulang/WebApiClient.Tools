@@ -11,6 +11,7 @@ namespace WebApiClient.Tools.Swagger
             var options = new CmdOptions();
             if (Parser.Default.ParseArguments(args, options))
             {
+                Console.WriteLine($"正在分析swagger：{options.Swagger}");
                 var doc = Uri.TryCreate(options.Swagger, UriKind.Absolute, out var _) ?
                     SwaggerDocument.FromUrlAsync(options.Swagger).Result :
                     SwaggerDocument.FromFileAsync(options.Swagger).Result;

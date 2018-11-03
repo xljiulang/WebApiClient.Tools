@@ -2,7 +2,7 @@
   "profiles": {
     "WebApiClient.Tools.Swagger": {
       "commandName": "Project",
-      "commandLineArgs": "-s http://petstore.swagger.io/v2/swagger.json"
+      "commandLineArgs": "-s petstore.swagger.json"
     }
   }
 }
