@@ -44,14 +44,7 @@ namespace WebApiClient.Tools.Swagger
             /// <returns></returns>
             public override string GetClientName(SwaggerDocument document, string path, SwaggerOperationMethod httpMethod, SwaggerOperation operation)
             {
-                var name = base.GetClientName(document, path, httpMethod, operation);
-
-                // 取不到名称，就用第一个Tag做为类名
-                if (string.IsNullOrEmpty(name) == true)
-                {
-                    return operation.Tags.FirstOrDefault();
-                }
-                return name;
+                return operation.Tags.FirstOrDefault();
             }
         }
     }

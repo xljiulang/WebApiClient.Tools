@@ -1,8 +1,10 @@
 ﻿using AngleSharp.Parser.Html;
 using NSwag;
 using NSwag.CodeGeneration.CSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -18,6 +20,19 @@ namespace WebApiClient.Tools.Swagger
         public string Interface { get; private set; }
 
         /// <summary>
+        /// 获取文档描述
+        /// </summary>
+        public string Summary { get; private set; }
+
+        /// <summary>
+        /// 获取是否有文档描述
+        /// </summary>
+        public bool HasSummary
+        {
+            get => string.IsNullOrEmpty(Summary) == false;
+        }
+
+        /// <summary>
         /// WebApiClient的接口数据模型
         /// </summary>
         /// <param name="className">类名</param>
@@ -27,7 +42,11 @@ namespace WebApiClient.Tools.Swagger
         public HttpApi(string className, IEnumerable<CSharpOperationModel> operations, SwaggerDocument document, HttpApiSettings settings)
             : base(className, operations, document, settings)
         {
+            var tag = document.Tags
+                .FirstOrDefault(item => string.Equals(item.Name, className, StringComparison.OrdinalIgnoreCase));
+
             this.Interface = $"I{this.Class}Api";
+            this.Summary = tag?.Description;
         }
 
         /// <summary>
