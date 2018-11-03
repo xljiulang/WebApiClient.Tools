@@ -1,10 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net451</TargetFramework>
+    <Authors>xljiulang</Authors>
+    <Company>xljiulang</Company>
+    <Copyright>Copyright © xljiulang 2018</Copyright>
+    <Description>将swagger的本地或远程json文件解析生成WebApiClient的接口定义代码文件的工具</Description>
+    <Summary>将swagger的本地或远程json文件解析生成WebApiClient的接口定义代码文件的工具</Summary>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <EmbeddedResource Include="Views\HttpModel.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

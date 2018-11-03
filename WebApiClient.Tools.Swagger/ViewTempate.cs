@@ -32,7 +32,8 @@ namespace WebApiClient.Tools.Swagger
         {
             var config = new TemplateServiceConfiguration
             {
-                Debug = false
+                Debug = false,
+                CachingProvider = new DefaultCachingProvider(t => { })
             };
             razor = RazorEngineService.Create(config);
         }

@@ -72,18 +72,19 @@ namespace WebApiClient.Tools.Swagger
             foreach (var api in apis)
             {
                 var file = Path.Combine(path, $"{api.Interface}.cs");
-                Console.WriteLine($"输出接口文件：{file}");
                 File.WriteAllText(file, api.ToString(), Encoding.UTF8);
+                Console.WriteLine($"输出接口文件：{file}");
             }
-            Console.WriteLine("输出接口全部完成..");
+            Console.WriteLine($"共输出{apis.Length}个文件..");
+            Console.WriteLine();
 
             foreach (var model in models)
             {
                 var file = Path.Combine(path, $"{model.Class}.cs");
-                Console.WriteLine($"输出模型文件：{file}");
                 File.WriteAllText(file, model.ToString(), Encoding.UTF8);
+                Console.WriteLine($"输出模型文件：{file}");
             }
-            Console.WriteLine("输出模型全部完成..");
+            Console.WriteLine($"共输出{models.Length}个文件..");
         }
 
         /// <summary>
