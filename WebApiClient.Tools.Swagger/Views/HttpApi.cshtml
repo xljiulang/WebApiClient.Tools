@@ -23,11 +23,13 @@
     <div>namespace @(Model.AspNetNamespace)</div>
     <div>{</div>
     <interface>
-        <div>[TraceFilter]</div>
-        @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
-        {
-            <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/]</div>
-        }
+        <attributes>
+            <div>[TraceFilter]</div>
+            @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
+            {
+                <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/]</div>
+            }
+        </attributes>
         <div>public interface @(Model.Interface) : IHttpApi</div>
         <div>{</div>
         @foreach (var operation in Model.Operations)
@@ -55,11 +57,14 @@
                 }
             </summary>
 
-            if (operation.IsDeprecated == true)
-            {
-                <div>[Obsolete]</div>
-            }
-            <div>[Http@(operation.HttpMethodUpper)("@(operation.Path)")]</div>
+            <attributes>
+                @if (operation.IsDeprecated == true)
+                {
+                    <div>[Obsolete]</div>
+                }
+                <div>[Http@(operation.HttpMethodUpper)("@(operation.Path)")]</div>
+            </attributes>
+
             <div>
                 <span>@(operation.ResultType)</span>
                 <span>@(operation.ActualOperationName)Async(</span>
