@@ -4,12 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net451</TargetFramework>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Controller.cshtml" />
-    <None Remove="Views\HttpModel.cshtml" />
-  </ItemGroup>
-
+  
   <ItemGroup>
     <EmbeddedResource Include="Views\HttpModel.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

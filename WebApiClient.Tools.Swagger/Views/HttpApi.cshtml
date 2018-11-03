@@ -9,7 +9,7 @@
 
     <div>using System.Net.Http;</div>
     <div>using System.Threading;</div>
-    <div>using System.ThreadingTasks;</div>
+    <div>using System.Threading.Tasks;</div>
 
     <div>using WebApiClient;</div>
     <div>using WebApiClient.Attributes;</div>
@@ -19,6 +19,7 @@
 
 <namespace>
     <div>namespace @(Model.AspNetNamespace)</div>
+    <div>{</div>
     <interface>
         <div>[HttpHost("@(Model.BaseUrl)")]</div>
         <div>public interface @(Model.Interface) : IHttpApi</div>
@@ -78,4 +79,5 @@
         }
         <div>}</div>
     </interface>
+    <div>}</div>
 </namespace>
