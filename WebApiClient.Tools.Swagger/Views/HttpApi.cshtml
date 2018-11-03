@@ -25,12 +25,13 @@
     <interface>
         @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
         {
-            <div>[HttpHost("@(Model.BaseUrl)")]</div>
+            <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/]</div>
         }
         <div>public interface @(Model.Interface) : IHttpApi</div>
         <div>{</div>
         @foreach (var operation in Model.Operations)
         {
+            var isMultipart = operation.Consumes.Contains("multipart/form-data");
             <summary>
                 @if (operation.HasSummary == true)
                 {
@@ -65,20 +66,9 @@
                             <span>[Required]</span>
                         }
 
-                        if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
-                        {
-                            <span>[PathQuery]</span>
-                        }
-                        else if (parameter.Kind == SwaggerParameterKind.Header)
+                        if (parameter.Kind == SwaggerParameterKind.Header)
                         {
                             <span>[Header("@(parameter.Name)")]</span>
-                        }
-                        else if (parameter.Kind == SwaggerParameterKind.FormData)
-                        {
-                            if (parameter.IsFile == false)
-                            {
-                                <span>[MulitpartContent]</span>
-                            }
                         }
                         else if (parameter.IsXmlBodyParameter == true)
                         {
@@ -88,6 +78,21 @@
                         {
                             <span>[JsonContent]</span>
                         }
+                        else if (parameter.Kind == SwaggerParameterKind.FormData)
+                        {
+                            if (parameter.IsFile == false)
+                            {
+                                if (isMultipart == true)
+                                {
+                                    <span>[MulitpartContent]</span>
+                                }
+                                else
+                                {
+                                    <span>[FormContent]</span>
+                                }
+                            }
+                        }
+
                         <span>@(parameter.TypeInControllerInterface)</span>
                         <span>@(parameter.VariableName)@(parameter.IsLast ? null : ",") </span>
                     }

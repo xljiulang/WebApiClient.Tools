@@ -53,8 +53,9 @@ namespace WebApiClient.Tools.Swagger
             if (schema.Type == JsonObjectType.File)
             {
                 if (parameter.CollectionFormat == SwaggerParameterCollectionFormat.Multi && !schema.Type.HasFlag(JsonObjectType.Array))
-                    return "MulitpartFile[]";
-
+                {
+                    return "IEnumerable<MulitpartFile>";
+                }
                 return "MulitpartFile";
             }
 

@@ -80,10 +80,11 @@ namespace WebApiClient.Tools.Swagger
                 }
 
                 var isEndMethod = line.EndsWith(");");
+                var isEndEnum = Regex.IsMatch(line, @"=\s*\d+\s*,");
                 var isEndProperty = line.EndsWith("{ get; set; }");
 
                 var prefix = string.Empty.PadRight(cTab * 4, ' ');
-                var suffix = isEndMethod || isEndProperty ?
+                var suffix = isEndMethod || isEndEnum || isEndProperty ?
                     Environment.NewLine :
                     null;
 
