@@ -1,11 +1,7 @@
 ﻿using AngleSharp.Parser.Html;
-using RazorEngine;
-using RazorEngine.Templating;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -13,13 +9,6 @@ namespace WebApiClient.Tools.Swagger
     public class HttpModel : Code
     {
         public string AspNetNamespace { get; private set; }
-
-        private static readonly ViewTempate view = new ViewTempate("HttpModel");
-
-        static HttpModel()
-        {
-            Engine.Razor.AddTemplate(view.ViewName, view);
-        }
 
         private HttpModel(string code, string nameSpace)
             : base(code)
@@ -31,13 +20,10 @@ namespace WebApiClient.Tools.Swagger
         {
             var builder = new StringBuilder();
             var list = new List<HttpModel>();
-            var reader = new StringReader(codes);
 
-            while (reader.Peek() >= 0)
+            foreach (var str in Code.GetLines(codes))
             {
-                var str = reader.ReadLine();
                 builder.AppendLine(str.Replace("«", "<").Replace("»", ">"));
-
                 if (string.Equals(str, "}") == true)
                 {
                     list.Add(new HttpModel(builder.ToString(), nameSpace));
@@ -49,7 +35,7 @@ namespace WebApiClient.Tools.Swagger
 
         public override string ToString()
         {
-            var html = Engine.Razor.RunCompile(view.ViewName, this.GetType(), this);
+            var html = ViewTempate.View(this);
             var source = new HtmlParser().Parse(html).Body.InnerText;
             return new Code(source).ToString();
         }

@@ -70,7 +70,7 @@ namespace WebApiClient.Tools.Swagger
             var builder = new StringBuilder();
             foreach (var line in GetLines(source))
             {
-                builder.AppendLine(line);
+                builder.AppendLine(line.Trim());
             }
             var code = builder.ToString();
             return Regex.Replace(code, $@"{Environment.NewLine}\s*{Environment.NewLine}", Environment.NewLine);

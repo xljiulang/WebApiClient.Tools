@@ -1,9 +1,6 @@
 ﻿using AngleSharp.Parser.Html;
 using NSwag;
 using NSwag.CodeGeneration.CSharp.Models;
-using RazorEngine;
-using RazorEngine.Templating;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -12,14 +9,7 @@ namespace WebApiClient.Tools.Swagger
     [DebuggerDisplay("Interface = {Interface}")]
     public class HttpApi : CSharpControllerTemplateModel
     {
-        private static readonly ViewTempate view = new ViewTempate("HttpApi");
-
         public string Interface { get; private set; }
-
-        static HttpApi()
-        {
-            Engine.Razor.AddTemplate(view.ViewName, view);
-        }
 
         public HttpApi(string controllerName, IEnumerable<CSharpOperationModel> operations, SwaggerDocument document, HttpApiSettings settings)
             : base(controllerName, operations, document, settings)
@@ -29,7 +19,7 @@ namespace WebApiClient.Tools.Swagger
 
         public override string ToString()
         {
-            var html = Engine.Razor.RunCompile(view.ViewName, this.GetType(), this);
+            var html = ViewTempate.View(this);
             var source = new HtmlParser().Parse(html).Body.InnerText;
             return new Code(source).ToString();
         }

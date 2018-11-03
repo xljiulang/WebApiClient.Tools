@@ -1,5 +1,4 @@
-﻿using NJsonSchema;
-using NJsonSchema.CodeGeneration.CSharp;
+﻿using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
