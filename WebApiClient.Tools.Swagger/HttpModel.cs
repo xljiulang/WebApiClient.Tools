@@ -10,12 +10,8 @@ using System.Text.RegularExpressions;
 namespace WebApiClient.Tools.Swagger
 {
     [DebuggerDisplay("Class = {Class}")]
-    public class HttpModel
+    public class HttpModel : Code
     {
-        private readonly string code;
-
-        public string Class { get; private set; }
-
         public string AspNetNamespace { get; private set; }
 
         private static readonly ViewTempate view = new ViewTempate("HttpModel");
@@ -26,9 +22,8 @@ namespace WebApiClient.Tools.Swagger
         }
 
         private HttpModel(string code, string nameSpace)
+            : base(code)
         {
-            this.code = code;
-            this.Class = Regex.Match(code, @"(?<=class |enum )\w+").Value;
             this.AspNetNamespace = nameSpace;
         }
 
@@ -52,16 +47,11 @@ namespace WebApiClient.Tools.Swagger
             return list.ToArray();
         }
 
-        public StringReader CreateClassReader()
-        {
-            return new StringReader(this.code);
-        }
-
         public override string ToString()
         {
             var html = Engine.Razor.RunCompile(view.ViewName, this.GetType(), this);
-            var document = new HtmlParser().Parse(html);
-            return document.Body.InnerText.Replace("\n \n", "\n");
+            var source = new HtmlParser().Parse(html).Body.InnerText;
+            return new Code(source).ToString();
         }
     }
 }

@@ -6,6 +6,7 @@
 
 <usings>
     <div>using System;</div>
+    <div>using System.Collections.Generic;</div>
     <div>using System.ComponentModel.DataAnnotations;</div>
 
     <div>using System.Net.Http;</div>
@@ -43,10 +44,8 @@
 
                 @foreach (var parameter in operation.Parameters)
                 {
-                    if (parameter.HasDescription == true)
-                    {
-                        <div>/// &lt;param name="@(parameter.VariableName)"&gt;@(parameter.Description.Replace("\r", "\t").Replace("\n", "\t"))&lt;/param&gt;</div>
-                    }
+                    var description = parameter.HasDescription ? parameter.Description.Replace("\r", "\t").Replace("\n", "\t") : null;
+                    <div>/// &lt;param name="@(parameter.VariableName)"&gt;@(description)&lt;/param&gt;</div>
                 }
                 @if (operation.HasResultDescription == true)
                 {
@@ -61,38 +60,36 @@
                 <parameters>
                     @foreach (var parameter in operation.Parameters)
                     {
-                        <div>
-                            @if (parameter.IsRequired == true)
-                            {
-                                <span>[Required]</span>
-                            }
+                        if (parameter.IsRequired == true)
+                        {
+                            <span>[Required]</span>
+                        }
 
-                            @if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
+                        if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
+                        {
+                            <span>[PathQuery]</span>
+                        }
+                        else if (parameter.Kind == SwaggerParameterKind.Header)
+                        {
+                            <span>[Header("@(parameter.Name)")]</span>
+                        }
+                        else if (parameter.Kind == SwaggerParameterKind.FormData)
+                        {
+                            if (parameter.IsFile == false)
                             {
-                                <span>[PathQuery]</span>
+                                <span>[MulitpartContent]</span>
                             }
-                            else if (parameter.Kind == SwaggerParameterKind.Header)
-                            {
-                                <span>[Header("@(parameter.Name)")]</span>
-                            }
-                            else if (parameter.Kind == SwaggerParameterKind.FormData)
-                            {
-                                if (parameter.IsFile == false)
-                                {
-                                    <span>[MulitpartContent]</span>
-                                }
-                            }
-                            else if (parameter.IsXmlBodyParameter == true)
-                            {
-                                <span>[XmlContent]</span>
-                            }
-                            else if (parameter.Kind == SwaggerParameterKind.Body)
-                            {
-                                <span>[JsonContent]</span>
-                            }
-                            <span>@(parameter.TypeInControllerInterface)</span>
-                            <span>@(parameter.VariableName)@(parameter.IsLast ? null : ",") </span>
-                        </div>
+                        }
+                        else if (parameter.IsXmlBodyParameter == true)
+                        {
+                            <span>[XmlContent]</span>
+                        }
+                        else if (parameter.Kind == SwaggerParameterKind.Body)
+                        {
+                            <span>[JsonContent]</span>
+                        }
+                        <span>@(parameter.TypeInControllerInterface)</span>
+                        <span>@(parameter.VariableName)@(parameter.IsLast ? null : ",") </span>
                     }
                 </parameters>
                 <span>);</span>

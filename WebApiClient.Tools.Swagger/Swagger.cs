@@ -1,8 +1,10 @@
-﻿using NJsonSchema.CodeGeneration.CSharp;
+﻿using NJsonSchema;
+using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.CSharp.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -38,8 +40,7 @@ namespace WebApiClient.Tools.Swagger
 
         public void GenerateFiles()
         {
-            var output = this.Settings.AspNetNamespace.Split('.').Last();
-            var path = Path.GetFullPath(output);
+            var path = this.Settings.AspNetNamespace.Split('.').Last();
             Directory.CreateDirectory(path);
 
             var apis = this.GetHttpApis();
@@ -48,13 +49,15 @@ namespace WebApiClient.Tools.Swagger
             foreach (var api in apis)
             {
                 var file = Path.Combine(path, $"{api.Interface}.cs");
-                File.WriteAllText(file, api.ToString());
+                Console.WriteLine($"输出文件：{file}");
+                File.WriteAllText(file, api.ToString(), Encoding.UTF8);
             }
 
             foreach (var model in models)
             {
                 var file = Path.Combine(path, $"{model.Class}.cs");
-                File.WriteAllText(file, model.ToString());
+                Console.WriteLine($"输出文件：{file}");
+                File.WriteAllText(file, model.ToString(), Encoding.UTF8);
             }
         }
 
@@ -74,7 +77,7 @@ namespace WebApiClient.Tools.Swagger
             {
                 var generator = new CSharpGenerator(this.swagger.Document, this.swagger.Settings.CSharpGeneratorSettings, (CSharpTypeResolver)this.Resolver);
                 var codes = generator.GenerateTypes().Concatenate();
-                return new CodeCleaner(codes).ToString();
+                return TransformCode(codes);
             }
 
             public HttpApi[] GetHttpApiModels()
@@ -100,47 +103,35 @@ namespace WebApiClient.Tools.Swagger
             {
                 return new HttpApiOperation(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
-        }
 
-        private class CodeCleaner
-        {
-            private readonly StringBuilder builder = new StringBuilder();
-
-            public CodeCleaner(string codes)
+            private static string TransformCode(string codes)
             {
-                foreach (var line in codes.Split('\n'))
+                var builder = new StringBuilder();
+                var lines = Code.GetLines(codes);
+
+                foreach (var line in lines)
                 {
-                    var clear = this.Clear(line);
-                    if (clear != null)
+                    if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
                     {
-                        builder.AppendLine(clear);
+                        continue;
+                    }
+
+                    var match = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")").Match(line);
+                    if (match.Success == true)
+                    {
+                        builder.AppendLine($"[AliasAs(\"{match.Value}\")]");
+                    }
+                    else
+                    {
+                        var @short = line
+                            .Replace("System.ComponentModel.DataAnnotations.", null)
+                            .Replace("System.Collections.Generic.", null);
+
+                        builder.AppendLine(@short);
                     }
                 }
-            }
 
-            private string Clear(string line)
-            {
-                if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
-                {
-                    return null;
-                }
-
-                var regex = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")");
-                var match = regex.Match(line);
-                if (match.Success == true)
-                {
-                    return $"    [AliasAs(\"{match.Value}\")]";
-                }
-                else
-                {
-                    line = line.Replace("System.ComponentModel.DataAnnotations.", null);
-                }
-                return line;
-            }
-
-            public override string ToString()
-            {
-                return this.builder.ToString();
+                return builder.ToString();
             }
         }
     }

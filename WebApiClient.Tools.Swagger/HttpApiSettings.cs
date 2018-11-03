@@ -11,6 +11,11 @@ namespace WebApiClient.Tools.Swagger
     {
         public HttpApiSettings()
         {
+            this.ResponseArrayType = "List";
+            this.ResponseDictionaryType = "Dictionary";
+            this.ParameterArrayType = "IEnumerable";
+            this.ParameterDictionaryType = "IDictionary";
+
             this.AspNetNamespace = this.GetType().Namespace;
             this.OperationNameGenerator = new OperationNameGenerators();
             this.CSharpGeneratorSettings.ClassStyle = CSharpClassStyle.Poco;

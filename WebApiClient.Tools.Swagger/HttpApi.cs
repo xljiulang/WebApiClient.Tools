@@ -3,6 +3,7 @@ using NSwag;
 using NSwag.CodeGeneration.CSharp.Models;
 using RazorEngine;
 using RazorEngine.Templating;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -29,8 +30,8 @@ namespace WebApiClient.Tools.Swagger
         public override string ToString()
         {
             var html = Engine.Razor.RunCompile(view.ViewName, this.GetType(), this);
-            var document = new HtmlParser().Parse(html);
-            return document.Body.InnerText.Replace("\n \n", "\n");
+            var source = new HtmlParser().Parse(html).Body.InnerText;
+            return new Code(source).ToString();
         }
     }
 }
