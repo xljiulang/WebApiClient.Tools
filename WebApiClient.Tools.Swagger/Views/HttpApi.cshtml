@@ -21,7 +21,7 @@
     <div>namespace @(Model.AspNetNamespace)</div>
     <interface>
         <div>[HttpHost("@(Model.BaseUrl)")]</div>
-        <div>public interface I@(Model.Class)Api : IHttpApi</div>
+        <div>public interface @(Model.Interface) : IHttpApi</div>
         <div>{</div>
         @foreach (var operation in Model.Operations)
         {

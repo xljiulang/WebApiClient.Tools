@@ -4,6 +4,8 @@ using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.CSharp.Models;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -31,7 +33,29 @@ namespace WebApiClient.Tools.Swagger
         {
             var generator = new Generator(this);
             var codes = generator.GenerateModelCodes();
-            return HttpModel.FromCodes(codes);
+            return HttpModel.FromCodes(codes, this.Settings.AspNetNamespace);
+        }
+
+        public void GenerateFiles()
+        {
+            var output = this.Settings.AspNetNamespace.Split('.').Last();
+            var path = Path.GetFullPath(output);
+            Directory.CreateDirectory(path);
+
+            var apis = this.GetHttpApis();
+            var models = this.GetHttpModels();
+
+            foreach (var api in apis)
+            {
+                var file = Path.Combine(path, $"{api.Interface}.cs");
+                File.WriteAllText(file, api.ToString());
+            }
+
+            foreach (var model in models)
+            {
+                var file = Path.Combine(path, $"{model.Class}.cs");
+                File.WriteAllText(file, model.ToString());
+            }
         }
 
         private class Generator : SwaggerToCSharpControllerGenerator

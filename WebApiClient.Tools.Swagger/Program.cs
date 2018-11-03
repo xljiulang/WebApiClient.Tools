@@ -7,13 +7,12 @@ namespace WebApiClient.Tools.Swagger
     {
         static void Main(string[] args)
         {
-            var json = File.ReadAllText("v1.json");
+            var json = File.ReadAllText("api-docs.json");
             var doc = SwaggerDocument.FromJsonAsync(json).Result;
             var swagger = new Swagger(doc);
 
-            var apis = swagger.GetHttpApis();          
-            var models = swagger.GetHttpModels();
-             
+            swagger.GenerateFiles();
+
             Console.ReadLine();
         }
     }

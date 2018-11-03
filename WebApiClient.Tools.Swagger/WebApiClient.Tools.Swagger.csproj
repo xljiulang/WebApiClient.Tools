@@ -7,9 +7,14 @@
 
   <ItemGroup>
     <None Remove="Controller.cshtml" />
+    <None Remove="Views\HttpModel.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Views\HttpModel.cshtml">
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      <Pack>$(IncludeRazorContentInPack)</Pack>
+    </EmbeddedResource>
     <EmbeddedResource Include="Views\HttpApi.cshtml">
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
       <Pack>$(IncludeRazorContentInPack)</Pack>
@@ -23,12 +28,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="System.Web" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="v1.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <None Update="api-docs.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

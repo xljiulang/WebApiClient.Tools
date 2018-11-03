@@ -8,10 +8,12 @@ using System.Diagnostics;
 
 namespace WebApiClient.Tools.Swagger
 {
-    [DebuggerDisplay("Class = {Class}")]
+    [DebuggerDisplay("Interface = {Interface}")]
     public class HttpApi : CSharpControllerTemplateModel
     {
-        static readonly ViewTempate view = new ViewTempate("HttpApi");
+        private static readonly ViewTempate view = new ViewTempate("HttpApi");
+
+        public string Interface { get; private set; }
 
         static HttpApi()
         {
@@ -21,16 +23,12 @@ namespace WebApiClient.Tools.Swagger
         public HttpApi(string controllerName, IEnumerable<CSharpOperationModel> operations, SwaggerDocument document, HttpApiSettings settings)
             : base(controllerName, operations, document, settings)
         {
-        }
-
-        public string ToHtmlString()
-        {
-            return Engine.Razor.RunCompile(view.ViewName, typeof(HttpApi), this);
+            this.Interface = $"I{this.Class}Api";
         }
 
         public override string ToString()
         {
-            var html = this.ToHtmlString();
+            var html = Engine.Razor.RunCompile(view.ViewName, this.GetType(), this);
             var document = new HtmlParser().Parse(html);
             return document.Body.InnerText.Replace("\n \n", "\n");
         }

@@ -8,6 +8,7 @@ namespace WebApiClient.Tools.Swagger
     {
         public HttpApiSettings()
         {
+            this.AspNetNamespace = "WebApiClient";            
             this.CSharpGeneratorSettings.ClassStyle = CSharpClassStyle.Poco;
             this.CSharpGeneratorSettings.GenerateJsonMethods = false;
             this.RouteNamingStrategy = CSharpControllerRouteNamingStrategy.OperationId;

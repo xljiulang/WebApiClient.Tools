@@ -1,0 +1,25 @@
+﻿@inherits HtmlTemplateBase<HttpModel>
+@{
+    var reader = Model.CreateClassReader();
+}
+
+@using WebApiClient.Tools.Swagger
+@using RazorEngine.Templating
+
+<usings>
+    <div>using System;</div>
+    <div>using System.ComponentModel.DataAnnotations;</div>
+    <div>using WebApiClient.DataAnnotations;</div>
+</usings>
+
+<namespace>
+    <div>namespace @(Model.AspNetNamespace)</div>
+    <div>{</div>
+    <class>
+        @while (reader.Peek() >= 0)
+        {
+            <div>@reader.ReadLine()</div>
+        }
+    </class>
+    <div>}</div>
+</namespace>

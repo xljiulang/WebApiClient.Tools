@@ -1,0 +1,2325 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "3.1",
+    "title": "Rke API"
+  },
+  "host": "10.10.2.59:9001",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "device-status-controller",
+      "description": "Device Status Controller"
+    },
+    {
+      "name": "data-controller",
+      "description": "Data Controller"
+    },
+    {
+      "name": "log-controller",
+      "description": "Log Controller"
+    },
+    {
+      "name": "tc-5000-controller",
+      "description": "TC 5000 Controller"
+    },
+    {
+      "name": "u-9-manage-center-controller",
+      "description": "U 9 Manage Center Controller"
+    },
+    {
+      "name": "init-controller",
+      "description": "Init Controller"
+    }
+  ],
+  "paths": {
+    "/init/device-info": {
+      "post": {
+        "tags": [ "init-controller" ],
+        "summary": "门口机登录后初始化门口机信息",
+        "operationId": "updateDeviceInfoUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "adSizeList[0].length",
+            "in": "query",
+            "description": "广告尺寸长度",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "adSizeList[0].width",
+            "in": "query",
+            "description": "广告尺寸宽度",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "adSizeList[0].adType",
+            "in": "query",
+            "description": "广告类型: 'url','img','video','voice','txt'",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "num",
+            "in": "query",
+            "description": "门口机机身号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "kenelVersion",
+            "in": "query",
+            "description": "内核版本",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "softwareVersion",
+            "in": "query",
+            "description": "软件版本",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "modelNumber",
+            "in": "query",
+            "description": "设备型号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "ip",
+            "in": "query",
+            "description": "ip地址",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mac",
+            "in": "query",
+            "description": "mac地址",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«EquipmentRedisModel»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/init/get-no-screen-token": {
+      "post": {
+        "tags": [ "init-controller" ],
+        "summary": "无屏门口机获取token",
+        "operationId": "getNoScreenTokenUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "门口机机身号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/init/login": {
+      "post": {
+        "tags": [ "init-controller" ],
+        "summary": "门口机登录，获取 token",
+        "operationId": "loginUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account",
+            "in": "query",
+            "description": "门口机账号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "门口机登录密码",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«string»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/init/signup": {
+      "post": {
+        "tags": [ "init-controller" ],
+        "summary": "门口机账号注册",
+        "operationId": "signupUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account",
+            "in": "query",
+            "description": "门口机登录账号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "门口机登录密码",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "structId",
+            "in": "query",
+            "description": "单元结构id",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "createrId",
+            "in": "query",
+            "description": "创建者id",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddAlarmLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "添加报警记录",
+        "operationId": "addAlarmLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "alarmType",
+            "in": "query",
+            "description": "报警类型（防拆:1、关门检测:2）",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "报警时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "设备机身号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddCallLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "新增对讲记录",
+        "operationId": "addCallLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "description": "主键",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "rtMode",
+            "in": "query",
+            "description": "呼叫模式(0电话,1视频)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "住户账号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "住户姓名",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "description": "住户地址",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "callTime",
+            "in": "query",
+            "description": "呼叫时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "description": "接听方式(已接1、未接0)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "callType",
+            "in": "query",
+            "description": "呼叫类型(呼入1、呼出0)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isOpenLock",
+            "in": "query",
+            "description": "是否开锁(开：1；未开：0)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "openTime",
+            "in": "query",
+            "description": "开锁时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "创建时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "设备机身号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddDoorCloseLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "添加开关门日志",
+        "operationId": "addOpendCloseLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "doorState",
+            "in": "query",
+            "description": "门状态(关门1、开门0)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "创建时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "设备机身号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddGuardWorkLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "新增保安巡逻记录",
+        "operationId": "addGuardWorkRecordLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "保安卡 id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "csId",
+            "in": "query",
+            "description": "社区结构 id",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "上报时间",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddIndoorMachineCallLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "添加室内机对讲记录",
+        "operationId": "addIndoorMachineCallLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "inDoorUnitId",
+            "in": "query",
+            "description": "室内机ID",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dialingType",
+            "in": "query",
+            "description": "主叫类型: 1门口机 2管理中心 3室内机",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dialingIP",
+            "in": "query",
+            "description": "主叫Ip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dialingAddress",
+            "in": "query",
+            "description": "主叫地址",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "called",
+            "in": "query",
+            "description": "被叫类型: 1门口机 2管理中心 3室内机",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "calledIP",
+            "in": "query",
+            "description": "被叫Ip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "calledAddress",
+            "in": "query",
+            "description": "被叫地址",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "answerType",
+            "in": "query",
+            "description": "接听方式（已接1、未接0）",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isOpenLock",
+            "in": "query",
+            "description": "是否开锁(开：1；未开：0)",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "openTime",
+            "in": "query",
+            "description": "开锁时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "callTime",
+            "in": "query",
+            "description": "呼叫时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "创建时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "门口机设备号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/log/AddOpenDoorLog": {
+      "post": {
+        "tags": [ "log-controller" ],
+        "summary": "新增开锁日志",
+        "operationId": "addOpendDoorLogUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "rkeLogEntityList",
+            "in": "query",
+            "required": false,
+            "type": "array",
+            "items": { "type": "object" },
+            "collectionFormat": "multi"
+          },
+          {
+            "name": "totalPage",
+            "in": "query",
+            "required": false,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "key",
+            "in": "query",
+            "description": "七牛返回的文件名：门口机上传图片到七牛云后的文件名，是图片 url 的一部分",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "hash",
+            "in": "query",
+            "description": "七牛返回的图片 hash 码",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "bucket",
+            "in": "query",
+            "description": "七牛返回的 bucket",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "fsize",
+            "in": "query",
+            "description": "七牛返回的文件大小",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "in": "query",
+            "description": "用户帐号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "住户姓名",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "address",
+            "in": "query",
+            "description": "住户地址",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "openType",
+            "in": "query",
+            "description": "开锁类型: UnKnow 0 未知， Card 1 刷卡， PassWord 2 密码， Mobile 3 手机， BlueTooth 4 蓝牙， Keys 5 按键， Face 6 人脸， Finger 7 指纹， DTMF 8 DTMF， RandPwd 9 访客随机密码",
+            "required": true,
+            "type": "integer",
+            "format": "int32"
+          },
+          {
+            "name": "out",
+            "in": "query",
+            "description": "是否为出状态",
+            "required": true,
+            "type": "boolean"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "equipmentNum",
+            "in": "query",
+            "description": "设备机身号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "cardNum",
+            "in": "query",
+            "description": "卡号",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/ad": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机广告",
+        "operationId": "getAdUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«List«ADReleaseView»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/affiche": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有公告",
+        "operationId": "getAfficheUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«List«AfficheReleaseView»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/community": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的小区信息",
+        "operationId": "getCommunityUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«小区信息模型»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/guard": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有保安",
+        "operationId": "getGuardUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«List«HouseGuardPage»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/guard-card": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有保安卡",
+        "operationId": "getGuardCardUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/help": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机帮助服务",
+        "operationId": "getHelpInfoUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«HelpService_EQ»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/indoor-machine": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的全部的室内机",
+        "operationId": "getIndoorMachinesUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«List«IndoorMachine_EQ»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/management-center": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的全部的管理中心",
+        "operationId": "getManagementCentersUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«List«ManagementCenter_EQ»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/member": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有住户（包含子级门口机对应的住户）(包含住户APP权限)",
+        "description": "gzip",
+        "operationId": "getMemberUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/member-card": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有住户卡",
+        "description": "gzip",
+        "operationId": "getCardUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/qiniu-token": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取七牛 token（上传文件到七牛时）",
+        "operationId": "getQiniuTokenWithReturnBodyUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/relationForRoomAndMember": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取房间与住户的关联关系",
+        "description": "gzip",
+        "operationId": "getRelationForRoomAndMemberUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/room": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的所有房间（包含子级门口机对应的房间）",
+        "description": "gzip",
+        "operationId": "getRoomWithGzipUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string",
+              "format": "byte"
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/rke-data/struct": {
+      "get": {
+        "tags": [ "data-controller" ],
+        "summary": "获取门口机对应的单元结构及其子结构信息",
+        "description": "包含其子单元",
+        "operationId": "getStructUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«Set«单元结构模型»»" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/status/online": {
+      "post": {
+        "tags": [ "device-status-controller" ],
+        "summary": "设备状态通知请求 当设备在线状态发生变化时",
+        "operationId": "callBackDeviceStateURLUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "num",
+            "in": "query",
+            "description": "设备机身号",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "createTime",
+            "in": "query",
+            "description": "状态变化的时间",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "isOnline",
+            "in": "query",
+            "description": "设备是否在线",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": { "description": "OK" },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/status/update-info": {
+      "post": {
+        "tags": [ "device-status-controller" ],
+        "summary": "登录设备获取最新 apk",
+        "operationId": "getReleaseUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "FT_Name",
+            "in": "query",
+            "description": "FT_Name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "apk 类型",
+            "in": "query",
+            "description": "FT_Name",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "$ref": "#/definitions/Return«Firmware»" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/tc5000/changeDataOfCloudEntrance": {
+      "post": {
+        "tags": [ "tc-5000-controller" ],
+        "summary": "TC_5000门口机数据添加、删除、更新",
+        "operationId": "changeDataOfCloudEntranceUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "query",
+            "description": "data",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changeTime",
+            "in": "query",
+            "description": "changeTime",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changeType",
+            "in": "query",
+            "description": "changeType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/tc5000/changeDataOfCloudHouseEntrance": {
+      "post": {
+        "tags": [ "tc-5000-controller" ],
+        "summary": "TC_5000门口机操作住户与门口机的关系（门口机关联的用户信息添加、删除、修改）",
+        "operationId": "changeDataOfCloudHouseEntranceUsingPOST",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "data",
+            "in": "query",
+            "description": "data",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changeTime",
+            "in": "query",
+            "description": "changeTime",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "changeType",
+            "in": "query",
+            "description": "changeType",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "201": { "description": "Created" },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/tc5000/cloudAccoutByAccPwd": {
+      "get": {
+        "tags": [ "tc-5000-controller" ],
+        "summary": "通过账号密码获取云端账号信息",
+        "operationId": "getUserCloudAccoutByAccPwdUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account",
+            "in": "query",
+            "description": "account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/tc5000/cloudAccoutByIdentity": {
+      "get": {
+        "tags": [ "tc-5000-controller" ],
+        "summary": "通过个人身份信息获取云端账号信息",
+        "operationId": "getUserCloudAccoutByCitiUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "name",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "citizenshipNumber",
+            "in": "query",
+            "description": "citizenshipNumber",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mobile",
+            "in": "query",
+            "description": "mobile",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/GetChangeDatas": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "getChangeDatas",
+        "operationId": "getChangeDatasUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "count",
+            "in": "query",
+            "description": "count",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/GetCommunityStructs": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "getCommunityStructs",
+        "operationId": "getCommunityStructsUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/GetEquipments": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "getEquipments",
+        "operationId": "getEquipmentsUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "description": "PageIndex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "PageSize",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "beginTime",
+            "in": "query",
+            "description": "beginTime",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/GetIndoorMachines": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "getIndoorMachines",
+        "operationId": "getIndoorMachinesUsingGET_1",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "PageIndex",
+            "in": "query",
+            "description": "PageIndex",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "description": "PageSize",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "beginTime",
+            "in": "query",
+            "description": "beginTime",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/GetRooms": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "getRooms",
+        "operationId": "getRoomsUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "description": "token",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    },
+    "/u9manage/manageCenterlogin": {
+      "get": {
+        "tags": [ "u-9-manage-center-controller" ],
+        "summary": "manageCenterlogin",
+        "operationId": "manageCenterloginUsingGET",
+        "consumes": [ "application/json" ],
+        "produces": [ "*/*" ],
+        "parameters": [
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "token",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "account",
+            "in": "query",
+            "description": "account",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "description": "password",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": { "type": "object" }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden" },
+          "404": { "description": "Not Found" }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "ADReleaseView": {
+      "type": "object",
+      "properties": {
+        "ADDID": { "type": "string" },
+        "ADDName": { "type": "string" },
+        "ADRID": { "type": "string" },
+        "AddDate": { "type": "string" },
+        "COID": { "type": "string" },
+        "CommunityName": { "type": "string" },
+        "Content": { "type": "string" },
+        "Creater": { "type": "string" },
+        "DevTypeID": { "type": "string" },
+        "EndHour": { "type": "string" },
+        "ID": { "type": "string" },
+        "LastEditDate": { "type": "string" },
+        "Link": { "type": "string" },
+        "PlayTime": { "type": "string" },
+        "PlayVolumn": { "type": "string" },
+        "ResouceName": { "type": "string" },
+        "StartHour": { "type": "string" },
+        "State": { "type": "string" },
+        "Type": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AfficheReleaseView": {
+      "type": "object",
+      "properties": {
+        "ACID": { "type": "string" },
+        "COID": { "type": "string" },
+        "Caption": { "type": "string" },
+        "CommunityName": { "type": "string" },
+        "Context": { "type": "string" },
+        "CreateTime": { "type": "string" },
+        "Enable": { "type": "boolean" },
+        "ID": { "type": "string" },
+        "ImgUrl": { "type": "string" },
+        "Name": { "type": "string" },
+        "Scope": { "type": "string" },
+        "Type": { "type": "string" },
+        "UpdateTime": { "type": "string" }
+      }
+    },
+    "EquipmentRedisModel": {
+      "type": "object",
+      "required": [ "allStructs", "communityId", "structId" ],
+      "properties": {
+        "allStructs": {
+          "type": "array",
+          "description": "此门口机对应的单元结构及其子结构",
+          "items": { "$ref": "#/definitions/单元结构模型" }
+        },
+        "communityId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "小区id"
+        },
+        "structId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "单元结构id"
+        }
+      }
+    },
+    "Firmware": {
+      "type": "object",
+      "properties": {
+        "AccountSid": { "type": "string" },
+        "CreateTime": { "type": "string" },
+        "Creator": { "type": "string" },
+        "FT_ID": { "type": "string" },
+        "FileName": { "type": "string" },
+        "FilePath": { "type": "string" },
+        "FileSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ID": { "type": "string" },
+        "VersionCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "VersionName": { "type": "string" }
+      }
+    },
+    "HelpService_EQ": {
+      "type": "object",
+      "properties": {
+        "HS_ADNote": { "type": "string" },
+        "HS_Name": { "type": "string" },
+        "HS_QRImage": { "type": "string" },
+        "HS_Remark": { "type": "string" },
+        "HS_Tel": { "type": "string" }
+      }
+    },
+    "HouseGuardPage": {
+      "type": "object",
+      "properties": {
+        "Account": { "type": "string" },
+        "AccountSid": { "type": "string" },
+        "Address": { "type": "string" },
+        "BirthDay": { "type": "string" },
+        "CallPhone": { "type": "string" },
+        "Creator": { "type": "string" },
+        "DefaultRoomId": { "type": "string" },
+        "FingerPrint1": { "type": "string" },
+        "Gender": { "type": "string" },
+        "HeadImage": { "type": "string" },
+        "ID": { "type": "string" },
+        "IdentityNo": { "type": "string" },
+        "IdentityType": { "type": "string" },
+        "IsAudited": { "type": "string" },
+        "IsChild": { "type": "string" },
+        "LastModifyTime": { "type": "string" },
+        "Mail": { "type": "string" },
+        "MaxCount": { "type": "string" },
+        "Mobile": { "type": "string" },
+        "Name": { "type": "string" },
+        "NickName": { "type": "string" },
+        "Password": { "type": "string" },
+        "QQ": { "type": "string" },
+        "RegMethod": { "type": "string" },
+        "TalkAccount": { "type": "string" },
+        "TalkPassword": { "type": "string" },
+        "UHomePassword": { "type": "string" }
+      }
+    },
+    "IndoorMachine_EQ": {
+      "type": "object",
+      "properties": {
+        "CallNum": { "type": "string" },
+        "HAdress": { "type": "string" },
+        "HouseName": { "type": "string" },
+        "ID": { "type": "string" },
+        "IsMain": { "type": "boolean" },
+        "LocalIP": { "type": "string" },
+        "LoginName": { "type": "string" },
+        "Name": { "type": "string" }
+      }
+    },
+    "ManagementCenter_EQ": {
+      "type": "object",
+      "properties": {
+        "HAdress": { "type": "string" },
+        "HouseName": { "type": "string" },
+        "ID": { "type": "string" },
+        "LocalIP": { "type": "string" },
+        "LoginName": { "type": "string" },
+        "Name": { "type": "string" }
+      }
+    },
+    "Return": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "type": "object" },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«EquipmentRedisModel»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "$ref": "#/definitions/EquipmentRedisModel" },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«Firmware»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "$ref": "#/definitions/Firmware" },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«HelpService_EQ»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "$ref": "#/definitions/HelpService_EQ" },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«List«ADReleaseView»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ADReleaseView" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«List«AfficheReleaseView»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/AfficheReleaseView" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«List«HouseGuardPage»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/HouseGuardPage" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«List«IndoorMachine_EQ»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/IndoorMachine_EQ" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«List«ManagementCenter_EQ»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/ManagementCenter_EQ" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«Set«单元结构模型»»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/单元结构模型" }
+        },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«string»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "type": "string" },
+        "message": { "type": "string" }
+      }
+    },
+    "Return«小区信息模型»": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "data": { "$ref": "#/definitions/小区信息模型" },
+        "message": { "type": "string" }
+      }
+    },
+    "单元结构模型": {
+      "type": "object",
+      "properties": {
+        "communityId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "小区结构id"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "单元结构全名"
+        },
+        "last": {
+          "type": "boolean",
+          "example": false,
+          "description": "是否为末级"
+        },
+        "path": {
+          "type": "string",
+          "description": "单元结构id的全路径"
+        },
+        "pid": {
+          "type": "integer",
+          "format": "int32",
+          "description": "父结构id"
+        },
+        "structId": {
+          "type": "integer",
+          "format": "int32",
+          "description": "单元结构id"
+        },
+        "structName": {
+          "type": "string",
+          "description": "单元结构名称"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32",
+          "description": "单元结构类型"
+        }
+      }
+    },
+    "小区信息模型": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "小区地址"
+        },
+        "areaid": {
+          "type": "integer",
+          "format": "int32",
+          "description": "行政区id"
+        },
+        "fullname": {
+          "type": "string",
+          "description": "小区全名"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int32",
+          "description": "小区注解id"
+        },
+        "lat": {
+          "type": "number",
+          "format": "double",
+          "description": "纬度"
+        },
+        "lng": {
+          "type": "number",
+          "format": "double",
+          "description": "经度"
+        },
+        "logo": {
+          "type": "string",
+          "description": "小区logo"
+        },
+        "name": {
+          "type": "string",
+          "description": "小区名称"
+        },
+        "tel": {
+          "type": "string",
+          "description": "小区电话"
+        }
+      }
+    }
+  }
+}

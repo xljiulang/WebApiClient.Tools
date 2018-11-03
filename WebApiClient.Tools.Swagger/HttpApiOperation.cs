@@ -16,9 +16,13 @@ namespace WebApiClient.Tools.Swagger
         {
             get
             {
-                return SyncResultType == "void"
+                var dataType = SyncResultType
+                    .Replace("«", "<")
+                    .Replace("»", ">");
+
+                return dataType == "void"
                     ? "ITask<HttpResponseMessage>"
-                    : $"ITask<{SyncResultType}>";
+                    : $"ITask<{dataType}>";
             }
         }
     }
