@@ -1,20 +1,32 @@
-﻿using NSwag;
+﻿using CommandLine;
+using NSwag;
 using System;
-using System.IO;
+
 namespace WebApiClient.Tools.Swagger
 {
     class Program
     {
         static void Main(string[] args)
         {
-            var json = File.ReadAllText("api-docs.json");
-            var doc = SwaggerDocument.FromJsonAsync(json).Result;
-            var swagger = new Swagger(doc);
+            var options = new SwaggerOptions();
+            if (Parser.Default.ParseArguments(args, options))
+            {
+                var doc = Uri.TryCreate(options.Swagger, UriKind.Absolute, out var _) ?
+                    SwaggerDocument.FromUrlAsync(options.Swagger).Result :
+                    SwaggerDocument.FromFileAsync(options.Swagger).Result;
 
-            swagger.Settings.AspNetNamespace = "WebApiClient.Swagger";
-            swagger.GenerateFiles();
-
-            Console.ReadLine();
+                var swagger = new Swagger(doc);
+                if (string.IsNullOrEmpty(options.Namespace) == false)
+                {
+                    swagger.Settings.AspNetNamespace = options.Namespace;
+                }
+                swagger.GenerateFiles();
+            }
+            else
+            {
+                Console.WriteLine(options.GetUsage());
+                Console.Read();
+            }
         }
     }
 }

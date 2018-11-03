@@ -5,7 +5,7 @@ using System.IO;
 
 namespace WebApiClient.Tools.Swagger
 {
-    public class ViewTempate : ITemplateSource
+    class ViewTempate : ITemplateSource
     {
         private static readonly IRazorEngineService razor;
 
