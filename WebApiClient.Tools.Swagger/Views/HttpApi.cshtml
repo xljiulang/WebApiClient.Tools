@@ -21,7 +21,10 @@
     <div>namespace @(Model.AspNetNamespace)</div>
     <div>{</div>
     <interface>
-        <div>[HttpHost("@(Model.BaseUrl)")]</div>
+        @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
+        {
+            <div>[HttpHost("@(Model.BaseUrl)")]</div>
+        }
         <div>public interface @(Model.Interface) : IHttpApi</div>
         <div>{</div>
         @foreach (var operation in Model.Operations)
@@ -61,7 +64,7 @@
                         {
                             <span>[Required]</span>
                         }
-
+                     
                         if (parameter.IsXmlBodyParameter == true)
                         {
                             <span>[XmlContent]</span>
