@@ -10,8 +10,8 @@ WebApiClient项目的工具集
   -n Namespace, --namespace=Namespace    代码的命名空间，如WebApiClient.Swagger
   --help                                 Display this help screen.
 ```
-### 2.1 工作流程
+### 1.2 工作流程
 1. 使用NSwag解析json得到SwaggerDocument
-2. 使用RazorEngine将SwaggerDocument传入cshtml编译得到html
-3. AngleSharp将html的文本代码提取，得到WebApiClient的声明式代码
+2. 使用RazorEngine将SwaggerDocument传入cshtml模板编译得到html
+3. 使用AngleSharp将html的文本代码提取，得到WebApiClient的声明式代码
 4. 代码美化，输出到本地文件
