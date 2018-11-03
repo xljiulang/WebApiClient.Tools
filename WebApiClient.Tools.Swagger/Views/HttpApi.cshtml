@@ -2,6 +2,7 @@
 
 @using WebApiClient.Tools.Swagger
 @using RazorEngine.Templating
+@using NSwag
 
 <usings>
     <div>using System;</div>
@@ -64,12 +65,27 @@
                         {
                             <span>[Required]</span>
                         }
-                     
-                        if (parameter.IsXmlBodyParameter == true)
+
+                        if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
+                        {
+                            <span>[PathQuery]</span>
+                        }
+                        else if (parameter.Kind == SwaggerParameterKind.Header)
+                        {
+                            <span>[Header("@(parameter.Name)")]</span>
+                        }
+                        else if (parameter.Kind == SwaggerParameterKind.FormData)
+                        {
+                            if (parameter.IsFile == false)
+                            {
+                                <span>[MulitpartContent]</span>
+                            }
+                        }
+                        else if (parameter.IsXmlBodyParameter == true)
                         {
                             <span>[XmlContent]</span>
                         }
-                        else if (parameter.IsBody == true)
+                        else if (parameter.Kind == SwaggerParameterKind.Body)
                         {
                             <span>[JsonContent]</span>
                         }

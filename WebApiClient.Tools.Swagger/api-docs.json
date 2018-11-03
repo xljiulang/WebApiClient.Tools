@@ -22,7 +22,7 @@
             "name": "id",
             "in": "header",
             "description": "参数ID",
-            "required": false,
+            "required": true,
             "type": "string"
           },
           {
@@ -31,6 +31,12 @@
             "description": "参数Name",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "FileName",
+            "in": "formData",
+            "required": false,
+            "type": "file"
           }
         ],
         "responses": { "200": { "description": "Success" } }
