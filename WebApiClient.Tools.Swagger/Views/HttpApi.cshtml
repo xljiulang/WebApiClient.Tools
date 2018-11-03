@@ -23,6 +23,7 @@
     <div>namespace @(Model.AspNetNamespace)</div>
     <div>{</div>
     <interface>
+        <div>[TraceFilter]</div>
         @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
         {
             <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/]</div>
@@ -54,6 +55,10 @@
                 }
             </summary>
 
+            if (operation.IsDeprecated == true)
+            {
+                <div>[Obsolete]</div>
+            }
             <div>[Http@(operation.HttpMethodUpper)("@(operation.Path)")]</div>
             <div>
                 <span>@(operation.ResultType)</span>
