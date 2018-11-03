@@ -29,7 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="swagger.json">
+    <None Update="petstore.swagger.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="petstore.swagger.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

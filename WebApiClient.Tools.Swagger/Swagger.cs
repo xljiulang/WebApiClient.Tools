@@ -6,7 +6,6 @@ using NSwag.CodeGeneration.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -63,7 +62,7 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         public void GenerateFiles()
         {
-            var path = this.Settings.AspNetNamespace.Split('.').Last();
+            var path = Path.Combine("output", this.Settings.AspNetNamespace);
             Directory.CreateDirectory(path);
 
             var apis = this.GetHttpApis();
