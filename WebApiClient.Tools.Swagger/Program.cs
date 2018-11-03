@@ -10,10 +10,10 @@ namespace WebApiClient.Tools.Swagger
             var json = File.ReadAllText("v1.json");
             var doc = SwaggerDocument.FromJsonAsync(json).Result;
             var swagger = new Swagger(doc);
-            var apis = swagger.GetHttpApis();
-            var cshtml = apis[0].ToString();
 
-            Console.WriteLine(cshtml);
+            var apis = swagger.GetHttpApis();          
+            var models = swagger.GetHttpModels();
+             
             Console.ReadLine();
         }
     }

@@ -17,8 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AngleSharp" Version="0.9.10" />
     <PackageReference Include="RazorEngine" Version="3.10.0" />
     <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="11.20.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Web" />
   </ItemGroup>
 
   <ItemGroup>

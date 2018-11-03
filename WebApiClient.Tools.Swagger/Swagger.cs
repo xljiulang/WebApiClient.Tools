@@ -27,11 +27,12 @@ namespace WebApiClient.Tools.Swagger
             return generator.GetHttpApiModels();
         }
 
-        public string GetModelCodes()
+        public HttpModel[] GetHttpModels()
         {
             var generator = new Generator(this);
-            return generator.GenerateModelCodes();
-        }         
+            var codes = generator.GenerateModelCodes();
+            return HttpModel.FromCodes(codes);
+        }
 
         private class Generator : SwaggerToCSharpControllerGenerator
         {
