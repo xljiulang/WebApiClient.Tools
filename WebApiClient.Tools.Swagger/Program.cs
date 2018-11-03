@@ -8,7 +8,7 @@ namespace WebApiClient.Tools.Swagger
     {
         static void Main(string[] args)
         {
-            var options = new SwaggerOptions();
+            var options = new CmdOptions();
             if (Parser.Default.ParseArguments(args, options))
             {
                 var doc = Uri.TryCreate(options.Swagger, UriKind.Absolute, out var _) ?

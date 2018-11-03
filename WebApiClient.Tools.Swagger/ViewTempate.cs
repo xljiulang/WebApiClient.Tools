@@ -5,14 +5,29 @@ using System.IO;
 
 namespace WebApiClient.Tools.Swagger
 {
+    /// <summary>
+    /// 表示视图模板
+    /// </summary>
     class ViewTempate : ITemplateSource
     {
+        /// <summary>
+        /// razor引擎
+        /// </summary>
         private static readonly IRazorEngineService razor;
 
+        /// <summary>
+        /// 同步锁
+        /// </summary>
         private static readonly object syncRoot = new object();
 
+        /// <summary>
+        /// 视图名称集合
+        /// </summary>
         private static readonly HashSet<string> hashSet = new HashSet<string>();
 
+        /// <summary>
+        /// 视图模板
+        /// </summary>
         static ViewTempate()
         {
             var config = new TemplateServiceConfiguration
@@ -22,11 +37,24 @@ namespace WebApiClient.Tools.Swagger
             razor = RazorEngineService.Create(config);
         }
 
+        /// <summary>
+        /// 返回视图执行结果
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model">模型</param>
+        /// <returns></returns>
         public static string View<T>(T model)
         {
             return View<T>(model, typeof(T).Name);
         }
 
+        /// <summary>
+        /// 返回视图执行结果
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="model">模型</param>
+        /// <param name="name">视图名称</param>
+        /// <returns></returns>
         public static string View<T>(T model, string name)
         {
             lock (syncRoot)
@@ -41,20 +69,36 @@ namespace WebApiClient.Tools.Swagger
             return razor.RunCompile(name, typeof(T), model);
         }
 
+        /// <summary>
+        /// cshtml代码
+        /// </summary>
         private string cshtml;
 
+        /// <summary>
+        /// 获取视图名称
+        /// </summary>
         public string Name { get; private set; }
 
-        public ViewTempate(string viewName)
+        /// <summary>
+        /// 视图模板
+        /// </summary>
+        /// <param name="name">视图名称</param>
+        public ViewTempate(string name)
         {
-            this.Name = viewName;
+            this.Name = name;
         }
 
-        public string TemplateFile
+        /// <summary>
+        /// 模板文件，调试用
+        /// </summary>
+        string ITemplateSource.TemplateFile
         {
             get => null;
         }
 
+        /// <summary>
+        /// 获取模板内容
+        /// </summary>
         public string Template
         {
             get
@@ -71,6 +115,10 @@ namespace WebApiClient.Tools.Swagger
             }
         }
 
+        /// <summary>
+        /// 返回内容读取器
+        /// </summary>
+        /// <returns></returns>
         public TextReader GetTemplateReader()
         {
             return new StringReader(this.Template);
