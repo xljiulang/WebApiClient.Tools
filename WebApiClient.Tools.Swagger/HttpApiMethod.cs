@@ -71,7 +71,8 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         protected override string GetParameterVariableName(SwaggerParameter parameter, IEnumerable<SwaggerParameter> allParameters)
         {
-            return CamelCase(parameter.Name);
+            var name = base.GetParameterVariableName(parameter, allParameters);
+            return CamelCase(name);
         }
 
         /// <summary>
