@@ -1,5 +1,5 @@
 # WebApiClient.Tools
-WebApiClient项目的工具集
+[WebApiClient](https://github.com/dotnetcore/WebApiClient)项目的工具集
 
 ## 1 WebApiClient.Tools.Swagger
 > 将swagger的本地或远程json文件解析生成WebApiClient的接口定义代码文件
