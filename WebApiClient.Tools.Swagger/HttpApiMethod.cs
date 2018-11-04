@@ -61,52 +61,6 @@ namespace WebApiClient.Tools.Swagger
             }
 
             return base.ResolveParameterType(parameter);
-        }
-
-        /// <summary>
-        /// 解析参数名称变量
-        /// </summary>
-        /// <param name="parameter"></param>
-        /// <param name="allParameters"></param>
-        /// <returns></returns>
-        protected override string GetParameterVariableName(SwaggerParameter parameter, IEnumerable<SwaggerParameter> allParameters)
-        {
-            var name = base.GetParameterVariableName(parameter, allParameters);
-            return CamelCase(name);
-        }
-
-        /// <summary>
-        /// 骆驼命名
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <returns></returns>
-        private static string CamelCase(string name)
-        {
-            if (string.IsNullOrEmpty(name) || char.IsUpper(name[0]) == false)
-            {
-                return name;
-            }
-
-            var charArray = name.ToCharArray();
-            for (int i = 0; i < charArray.Length; i++)
-            {
-                if (i == 1 && char.IsUpper(charArray[i]) == false)
-                {
-                    break;
-                }
-
-                var hasNext = (i + 1 < charArray.Length);
-                if (i > 0 && hasNext && !char.IsUpper(charArray[i + 1]))
-                {
-                    if (char.IsSeparator(charArray[i + 1]))
-                    {
-                        charArray[i] = char.ToLowerInvariant(charArray[i]);
-                    }
-                    break;
-                }
-                charArray[i] = char.ToLowerInvariant(charArray[i]);
-            }
-            return new string(charArray);
-        }
+        } 
     }
 }
