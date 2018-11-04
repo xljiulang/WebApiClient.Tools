@@ -38,7 +38,7 @@
             <div>[TraceFilter]</div>
             @if (string.IsNullOrEmpty(Model.BaseUrl) == false)
             {
-                <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/]</div>
+                <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/")]</div>
             }
         </attributes>
         <div>public interface @(Model.Interface) : IHttpApi</div>
