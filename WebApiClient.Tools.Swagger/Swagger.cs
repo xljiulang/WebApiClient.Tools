@@ -6,6 +6,7 @@ using NSwag.CodeGeneration.CSharp.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -40,11 +41,21 @@ namespace WebApiClient.Tools.Swagger
         }
 
         /// <summary>
+        /// Swagger描述
+        /// </summary>
+        /// <param name="document">Swagger文档</param>
+        public Swagger(SwaggerDocument document)
+        {
+            this.Document = PrettyName(document);
+            this.Settings = new HttpApiSettings();
+        }
+
+        /// <summary>
         /// 获取swagger文档
         /// </summary>
         /// <param name="swagger"></param>
         /// <returns></returns>
-        static SwaggerDocument GetDocument(string swagger)
+        private static SwaggerDocument GetDocument(string swagger)
         {
             Console.WriteLine($"正在分析swagger：{swagger}");
             if (Uri.TryCreate(swagger, UriKind.Absolute, out var _) == true)
@@ -58,13 +69,58 @@ namespace WebApiClient.Tools.Swagger
         }
 
         /// <summary>
-        /// Swagger描述
+        /// 对文档的Definitions类型名称美化
         /// </summary>
-        /// <param name="document">Swagger文档</param>
-        public Swagger(SwaggerDocument document)
+        /// <param name="document"></param>
+        /// <returns></returns>
+        private static SwaggerDocument PrettyName(SwaggerDocument document)
         {
-            this.Document = document;
-            this.Settings = new HttpApiSettings();
+            var changed = false;
+            var json = document.ToJson();
+
+            foreach (var item in document.Definitions)
+            {
+                var name = item.Key;
+                var prettyName = PrettyName(name);
+
+                if (name != prettyName)
+                {
+                    changed = true;
+                    var escapeName = Regex.Escape(name);
+
+                    json = Regex.Replace(json, $@"(?<=#/definitions/){escapeName}", prettyName);
+                    json = Regex.Replace(json, $@"(?<=""){escapeName}(?="")", prettyName);
+                }
+            }
+
+            return changed ? SwaggerDocument.FromJsonAsync(json).Result : document;
+        }
+
+
+        /// <summary>
+        /// 美化名称
+        /// </summary>
+        /// <param name="name">名称</param>
+        /// <returns></returns>
+        private static string PrettyName(string name)
+        {
+            if (name.Contains("[]") == true)
+            {
+                name = name.Replace("[]", "Array");
+            }
+
+            var matchs = Regex.Matches(name, @"\W");
+            if (matchs.Count == 0 || matchs.Count % 2 > 0)
+            {
+                return name;
+            }
+
+            var index = -1;
+            return Regex.Replace(name, @"\W", m =>
+            {
+                index = index + 1;
+                return index < matchs.Count / 2 ? "Of" : null;
+            });
         }
 
         /// <summary>
@@ -228,8 +284,6 @@ namespace WebApiClient.Tools.Swagger
                     }
 
                     var cleaned = line
-                        .Replace("«", "<")
-                        .Replace("»", ">")
                         .Replace("partial class", "class")
                         .Replace("System.Collections.Generic.", null)
                         .Replace("System.ComponentModel.DataAnnotations.", null);

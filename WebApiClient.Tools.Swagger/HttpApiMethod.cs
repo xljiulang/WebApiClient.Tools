@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
@@ -32,13 +33,34 @@ namespace WebApiClient.Tools.Swagger
         {
             get
             {
-                var dataType = SyncResultType
-                    .Replace("«", "<")
-                    .Replace("»", ">");
-
-                return dataType == "void"
+                return this.SyncResultType == "void"
                     ? "ITask<HttpResponseMessage>"
-                    : $"ITask<{dataType}>";
+                    : $"ITask<{this.SyncResultType}>";
+            }
+        }
+
+        /// <summary>
+        /// 获取方法好友名称
+        /// </summary>
+        public override string ActualOperationName
+        {
+            get
+            {
+                var name = base.ActualOperationName;
+                if (Regex.IsMatch(name, @"^\d") == false)
+                {
+                    return name;
+                }
+
+                name = Regex.Match(this.Id, @"\w*").Value;
+                if (string.IsNullOrEmpty(name))
+                {
+                    name = "unname";
+                }
+
+                var names = name.ToCharArray();
+                names[0] = char.ToUpper(names[0]);
+                return new string(names);
             }
         }
 
@@ -61,6 +83,6 @@ namespace WebApiClient.Tools.Swagger
             }
 
             return base.ResolveParameterType(parameter);
-        } 
+        }
     }
 }

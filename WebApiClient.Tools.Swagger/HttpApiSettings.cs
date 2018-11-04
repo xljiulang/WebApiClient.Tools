@@ -72,6 +72,7 @@ namespace WebApiClient.Tools.Swagger
                 var variableName = CamelCase(parameter.Name
                     .Replace("-", "_")
                     .Replace(".", "_")
+                    .Replace(" ", null)
                     .Replace("$", string.Empty)
                     .Replace("[", string.Empty)
                     .Replace("]", string.Empty));
@@ -81,6 +82,7 @@ namespace WebApiClient.Tools.Swagger
 
                 return variableName;
             }
+
 
             /// <summary>
             /// 骆驼命名
