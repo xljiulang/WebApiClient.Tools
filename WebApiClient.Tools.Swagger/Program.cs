@@ -8,19 +8,10 @@ namespace WebApiClient.Tools.Swagger
     {
         static void Main(string[] args)
         {
-            var options = new CmdOptions();
+            var options = new SwaggerOptions();
             if (Parser.Default.ParseArguments(args, options))
             {
-                Console.WriteLine($"正在分析swagger：{options.Swagger}");
-                var doc = Uri.TryCreate(options.Swagger, UriKind.Absolute, out var _) ?
-                    SwaggerDocument.FromUrlAsync(options.Swagger).Result :
-                    SwaggerDocument.FromFileAsync(options.Swagger).Result;
-
-                var swagger = new Swagger(doc);
-                if (string.IsNullOrEmpty(options.Namespace) == false)
-                {
-                    swagger.Settings.AspNetNamespace = options.Namespace;
-                }
+                var swagger = new Swagger(options);
                 swagger.GenerateFiles();
             }
             else

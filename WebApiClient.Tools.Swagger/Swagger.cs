@@ -29,6 +29,37 @@ namespace WebApiClient.Tools.Swagger
         /// <summary>
         /// Swagger描述
         /// </summary>
+        /// <param name="options">选项</param>
+        public Swagger(SwaggerOptions options)
+            : this(GetDocument(options.Swagger))
+        {
+            if (string.IsNullOrEmpty(options.Namespace) == false)
+            {
+                this.Settings.AspNetNamespace = options.Namespace;
+            }
+        }
+
+        /// <summary>
+        /// 获取swagger文档
+        /// </summary>
+        /// <param name="swagger"></param>
+        /// <returns></returns>
+        static SwaggerDocument GetDocument(string swagger)
+        {
+            Console.WriteLine($"正在分析swagger：{swagger}");
+            if (Uri.TryCreate(swagger, UriKind.Absolute, out var _) == true)
+            {
+                return SwaggerDocument.FromUrlAsync(swagger).Result;
+            }
+            else
+            {
+                return SwaggerDocument.FromFileAsync(swagger).Result;
+            }
+        }
+
+        /// <summary>
+        /// Swagger描述
+        /// </summary>
         /// <param name="document">Swagger文档</param>
         public Swagger(SwaggerDocument document)
         {
@@ -62,28 +93,30 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         public void GenerateFiles()
         {
-            var path = Path.Combine("output", this.Settings.AspNetNamespace);
-            Directory.CreateDirectory(path);
+            var dir = Path.Combine("output", this.Settings.AspNetNamespace);
+            var apisPath = Path.Combine(dir, "HttpApis");
+            var modelsPath = Path.Combine(dir, "HttpModels");
+
+            Directory.CreateDirectory(apisPath);
+            Directory.CreateDirectory(modelsPath);
 
             var apis = this.GetHttpApis();
-            var models = this.GetHttpModels();
-
             foreach (var api in apis)
             {
-                var file = Path.Combine(path, $"{api.Interface}.cs");
+                var file = Path.Combine(apisPath, $"{api.Interface}.cs");
                 File.WriteAllText(file, api.ToString(), Encoding.UTF8);
                 Console.WriteLine($"输出接口文件：{file}");
             }
-            Console.WriteLine($"共输出{apis.Length}个文件..");
-            Console.WriteLine();
 
+            var models = this.GetHttpModels();
             foreach (var model in models)
             {
-                var file = Path.Combine(path, $"{model.Class}.cs");
+                var file = Path.Combine(modelsPath, $"{model.Class}.cs");
                 File.WriteAllText(file, model.ToString(), Encoding.UTF8);
                 Console.WriteLine($"输出模型文件：{file}");
             }
-            Console.WriteLine($"共输出{models.Length}个文件..");
+
+            Console.WriteLine($"共输出{apis.Length + models.Length}个文件..");
         }
 
         /// <summary>
@@ -166,7 +199,7 @@ namespace WebApiClient.Tools.Swagger
             /// <returns></returns>
             protected override CSharpOperationModel CreateOperationModel(SwaggerOperation operation, ClientGeneratorBaseSettings settings)
             {
-                return new HttpApiOperation(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
+                return new HttpApiMethod(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
 
             /// <summary>

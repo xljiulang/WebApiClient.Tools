@@ -6,7 +6,7 @@ namespace WebApiClient.Tools.Swagger
     /// <summary>
     /// 表示命令选项
     /// </summary>
-    class CmdOptions
+    public class SwaggerOptions
     {
         /// <summary>
         /// swagger的json本地文件路径或远程Uri地址
