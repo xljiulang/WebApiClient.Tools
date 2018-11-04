@@ -230,6 +230,7 @@ namespace WebApiClient.Tools.Swagger
                     var cleaned = line
                         .Replace("«", "<")
                         .Replace("»", ">")
+                        .Replace("partial class", "class")
                         .Replace("System.Collections.Generic.", null)
                         .Replace("System.ComponentModel.DataAnnotations.", null);
 
