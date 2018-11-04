@@ -30,7 +30,7 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="source">源代码</param>
         public CSharpCode(string source)
         {
-            this.code = AutoIndent(source);
+            this.code = Pretty(source);
             this.Class = Regex.Match(source, @"(?<=class |enum |interface )\w+").Value;
         }
 
@@ -52,11 +52,11 @@ namespace WebApiClient.Tools.Swagger
         }
 
         /// <summary>
-        /// 自动缩进
+        /// 美化
         /// </summary>
         /// <param name="code">源代码</param>
         /// <returns></returns>
-        private static string AutoIndent(string code)
+        private static string Pretty(string code)
         {
             if (code == null)
             {
@@ -66,6 +66,7 @@ namespace WebApiClient.Tools.Swagger
             var tab = 0;
             var builder = new StringBuilder();
             var compactCode = Compact(code);
+
             foreach (var line in GetLines(compactCode))
             {
                 var cTab = tab;
@@ -90,7 +91,7 @@ namespace WebApiClient.Tools.Swagger
 
                 builder.AppendLine($"{prefix}{line}{suffix}");
             }
-            return builder.ToString();
+            return builder.ToString().Trim();
         }
 
         /// <summary>
@@ -108,10 +109,13 @@ namespace WebApiClient.Tools.Swagger
             var builder = new StringBuilder();
             foreach (var line in GetLines(code))
             {
-                builder.AppendLine(line.Trim());
+                var spaceTrim = Regex.Replace(line.Trim(), @"(?<=\().*(?=\))", m => m.Value.Trim());
+                builder.AppendLine(spaceTrim);
             }
-            var trimCode = builder.ToString();
-            return Regex.Replace(trimCode, $@"{Environment.NewLine}\s*{Environment.NewLine}", Environment.NewLine);
+
+            var rn = Environment.NewLine;
+            var trimCode = builder.ToString().Trim();
+            return Regex.Replace(trimCode, $@"{rn}\s*{rn}", rn);
         }
 
         /// <summary>
