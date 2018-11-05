@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -39,6 +38,7 @@ namespace WebApiClient.Tools.Swagger
             if (string.IsNullOrEmpty(options.Namespace) == false)
             {
                 this.Settings.AspNetNamespace = options.Namespace;
+                this.Settings.CSharpGeneratorSettings.Namespace = options.Namespace;
             }
         }
 
@@ -48,7 +48,7 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="document">Swagger文档</param>
         public Swagger(SwaggerDocument document)
         {
-            this.Document = PrettyName(document);
+            this.Document = document;
             this.Settings = new HttpApiSettings();
 
             this.resolver = SwaggerToCSharpGeneratorBase
@@ -71,61 +71,6 @@ namespace WebApiClient.Tools.Swagger
             {
                 return SwaggerDocument.FromFileAsync(swagger).Result;
             }
-        }
-
-        /// <summary>
-        /// 对文档的Definitions类型名称美化
-        /// </summary>
-        /// <param name="document"></param>
-        /// <returns></returns>
-        private static SwaggerDocument PrettyName(SwaggerDocument document)
-        {
-            var changed = false;
-            var json = document.ToJson();
-
-            foreach (var item in document.Definitions)
-            {
-                var name = item.Key;
-                var prettyName = PrettyName(name);
-
-                if (name != prettyName)
-                {
-                    changed = true;
-                    var escapeName = Regex.Escape(name);
-
-                    json = Regex.Replace(json, $@"(?<=#/definitions/){escapeName}", prettyName);
-                    json = Regex.Replace(json, $@"(?<=""){escapeName}(?="")", prettyName);
-                }
-            }
-
-            return changed ? SwaggerDocument.FromJsonAsync(json).Result : document;
-        }
-
-
-        /// <summary>
-        /// 美化名称
-        /// </summary>
-        /// <param name="name">名称</param>
-        /// <returns></returns>
-        private static string PrettyName(string name)
-        {
-            if (name.Contains("[]") == true)
-            {
-                name = name.Replace("[]", "Array");
-            }
-
-            var matchs = Regex.Matches(name, @"\W");
-            if (matchs.Count == 0 || matchs.Count % 2 > 0)
-            {
-                return name;
-            }
-
-            var index = -1;
-            return Regex.Replace(name, @"\W", m =>
-            {
-                index = index + 1;
-                return index < matchs.Count / 2 ? "Of" : null;
-            });
         }
 
         /// <summary>

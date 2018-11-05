@@ -1,4 +1,5 @@
-﻿using NJsonSchema.CodeGeneration.CSharp;
+﻿using NJsonSchema;
+using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
@@ -6,6 +7,7 @@ using NSwag.CodeGeneration.CSharp.Models;
 using NSwag.CodeGeneration.OperationNameGenerators;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -26,7 +28,8 @@ namespace WebApiClient.Tools.Swagger
 
             this.AspNetNamespace = this.GetType().Namespace;
             this.OperationNameGenerator = new OperationNameProvider();
-            this.ParameterNameGenerator = new ParameterNameGeProvider();
+            this.ParameterNameGenerator = new ParameterNameProvider();
+            this.CSharpGeneratorSettings.TypeNameGenerator = new TypeNameProvider();
             this.CSharpGeneratorSettings.ClassStyle = CSharpClassStyle.Poco;
             this.CSharpGeneratorSettings.GenerateJsonMethods = false;
             this.RouteNamingStrategy = CSharpControllerRouteNamingStrategy.OperationId;
@@ -54,7 +57,7 @@ namespace WebApiClient.Tools.Swagger
         /// <summary>
         /// 参数名提供者
         /// </summary>
-        private class ParameterNameGeProvider : IParameterNameGenerator
+        private class ParameterNameProvider : IParameterNameGenerator
         {
             /// <summary>
             /// 生成参数名
@@ -116,6 +119,44 @@ namespace WebApiClient.Tools.Swagger
                     charArray[i] = char.ToLowerInvariant(charArray[i]);
                 }
                 return new string(charArray);
+            }
+        }
+
+        /// <summary>
+        /// 类型名称提供者
+        /// </summary>
+        private class TypeNameProvider : DefaultTypeNameGenerator
+        {
+            public override string Generate(JsonSchema4 schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
+            {
+                var prettyName = PrettyName(typeNameHint);
+                return base.Generate(schema, prettyName, reservedTypeNames);
+            }
+
+            /// <summary>
+            /// 美化类型名称
+            /// </summary>
+            /// <param name="name">名称</param>
+            /// <returns></returns>
+            private static string PrettyName(string name)
+            {
+                if (name.Contains("[]") == true)
+                {
+                    name = name.Replace("[]", "Array");
+                }
+
+                var matchs = Regex.Matches(name, @"\W");
+                if (matchs.Count == 0 || matchs.Count % 2 > 0)
+                {
+                    return name;
+                }
+
+                var index = -1;
+                return Regex.Replace(name, @"\W", m =>
+                {
+                    index = index + 1;
+                    return index < matchs.Count / 2 ? "Of" : null;
+                });
             }
         }
     }
