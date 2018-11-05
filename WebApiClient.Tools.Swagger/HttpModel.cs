@@ -1,7 +1,8 @@
 ﻿using AngleSharp.Parser.Html;
-using System.Collections.Generic;
+using NJsonSchema.CodeGeneration;
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -21,34 +22,45 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         /// <param name="code">源代码</param>
         /// <param name="nameSpace">命名空间</param>
-        private HttpModel(string code, string nameSpace)
-            : base(code)
+        public HttpModel(CodeArtifact code, string nameSpace)
+           : base(TransformCode(code.Code))
         {
             this.AspNetNamespace = nameSpace;
         }
-
         /// <summary>
-        /// 从所有模型代码里分离出多个HttpModel
+        /// 转换代码
+        /// 将NSwag生成的模型代码转换为WebApiClient的模型代码
         /// </summary>
-        /// <param name="codes">所有代码</param>
-        /// <param name="nameSpace">使用的命名空间</param>
+        /// <param name="nswagCode"></param>
         /// <returns></returns>
-        public static HttpModel[] FromCodes(string codes, string nameSpace)
+        private static string TransformCode(string nswagCode)
         {
             var builder = new StringBuilder();
-            var httpModels = new List<HttpModel>();
+            var lines = CSharpCode.GetLines(nswagCode);
 
-            foreach (var line in CSharpCode.GetLines(codes))
+            foreach (var line in lines)
             {
-                builder.AppendLine(line);
-                if (string.Equals(line, "}") == true)
+                if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
                 {
-                    var model = new HttpModel(builder.ToString(), nameSpace);
-                    httpModels.Add(model);
-                    builder.Clear();
+                    continue;
                 }
+
+                var match = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")").Match(line);
+                if (match.Success == true)
+                {
+                    builder.AppendLine($"[AliasAs(\"{match.Value}\")]");
+                    continue;
+                }
+
+                var cleaned = line
+                    .Replace("partial class", "class")
+                    .Replace("System.Collections.Generic.", null)
+                    .Replace("System.ComponentModel.DataAnnotations.", null);
+
+                builder.AppendLine(cleaned);
             }
-            return httpModels.ToArray();
+
+            return builder.ToString();
         }
 
         /// <summary>

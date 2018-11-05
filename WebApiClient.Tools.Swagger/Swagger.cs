@@ -17,6 +17,8 @@ namespace WebApiClient.Tools.Swagger
     /// </summary>
     public class Swagger
     {
+        private readonly CSharpTypeResolver resolver;
+
         /// <summary>
         /// 获取Swagger文档
         /// </summary>
@@ -48,6 +50,9 @@ namespace WebApiClient.Tools.Swagger
         {
             this.Document = PrettyName(document);
             this.Settings = new HttpApiSettings();
+
+            this.resolver = SwaggerToCSharpGeneratorBase
+                .CreateResolverWithExceptionSchema(this.Settings.CSharpGeneratorSettings, document);
         }
 
         /// <summary>
@@ -129,8 +134,8 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         public HttpApi[] GetHttpApis()
         {
-            var generator = new Generator(this);
-            return generator.GetHttpApiModels();
+            var provider = new HttpApiProvider(this);
+            return provider.GetHttpApiModels();
         }
 
         /// <summary>
@@ -139,9 +144,8 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         public HttpModel[] GetHttpModels()
         {
-            var generator = new Generator(this);
-            var codes = generator.GenerateModelCodes();
-            return HttpModel.FromCodes(codes, this.Settings.AspNetNamespace);
+            var provider = new HttpModelProvider(this);
+            return provider.GetHttpModels();
         }
 
         /// <summary>
@@ -176,34 +180,22 @@ namespace WebApiClient.Tools.Swagger
         }
 
         /// <summary>
-        /// 表示代码生成器
+        /// 表示HttpApi提供者
         /// </summary>
-        private class Generator : SwaggerToCSharpControllerGenerator
+        private class HttpApiProvider : SwaggerToCSharpControllerGenerator
         {
             private readonly Swagger swagger;
 
             private readonly List<HttpApi> httpApiList = new List<HttpApi>();
 
             /// <summary>
-            /// 代码生成器
+            /// HttpApi提供者
             /// </summary>
             /// <param name="swagger"></param>
-            public Generator(Swagger swagger)
-                : base(swagger.Document, swagger.Settings)
+            public HttpApiProvider(Swagger swagger)
+                : base(swagger.Document, swagger.Settings, swagger.resolver)
             {
                 this.swagger = swagger;
-            }
-
-            /// <summary>
-            /// 生成模型的代码
-            /// 这里是NSwag已经实现
-            /// </summary>
-            /// <returns></returns>
-            public string GenerateModelCodes()
-            {
-                var generator = new CSharpGenerator(this.swagger.Document, this.swagger.Settings.CSharpGeneratorSettings, (CSharpTypeResolver)this.Resolver);
-                var nswagCodes = generator.GenerateTypes().Concatenate();
-                return TransformCode(nswagCodes);
             }
 
             /// <summary>
@@ -257,41 +249,35 @@ namespace WebApiClient.Tools.Swagger
             {
                 return new HttpApiMethod(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
+        }
+
+        /// <summary>
+        /// 表示HttpModel提供者
+        /// </summary>
+        private class HttpModelProvider : CSharpGenerator
+        {
+            private readonly Swagger swagger;
 
             /// <summary>
-            /// 转换代码
-            /// 将NSwag生成的模型代码转换为WebApiClient的模型代码
+            /// HttpModel提供者
             /// </summary>
-            /// <param name="nswagCodes"></param>
-            /// <returns></returns>
-            private static string TransformCode(string nswagCodes)
+            /// <param name="swagger"></param>
+            public HttpModelProvider(Swagger swagger)
+                : base(swagger.Document, swagger.Settings.CSharpGeneratorSettings, swagger.resolver)
             {
-                var builder = new StringBuilder();
-                var lines = CSharpCode.GetLines(nswagCodes);
+                this.swagger = swagger;
+            }
 
-                foreach (var line in lines)
-                {
-                    if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
-                    {
-                        continue;
-                    }
-
-                    var match = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")").Match(line);
-                    if (match.Success == true)
-                    {
-                        builder.AppendLine($"[AliasAs(\"{match.Value}\")]");
-                        continue;
-                    }
-
-                    var cleaned = line
-                        .Replace("partial class", "class")
-                        .Replace("System.Collections.Generic.", null)
-                        .Replace("System.ComponentModel.DataAnnotations.", null);
-
-                    builder.AppendLine(cleaned);
-                }
-
-                return builder.ToString();
+            /// <summary>
+            /// 获取所有HttpModels
+            /// </summary>
+            /// <returns></returns>
+            public HttpModel[] GetHttpModels()
+            {
+                return this.GenerateTypes()
+                    .Artifacts
+                    .Select(item => new HttpModel(item, this.swagger.Settings.AspNetNamespace))
+                    .ToArray();
             }
         }
     }
