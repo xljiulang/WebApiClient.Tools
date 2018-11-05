@@ -1,5 +1,4 @@
-﻿using AngleSharp.Parser.Html;
-using NJsonSchema.CodeGeneration;
+﻿using NJsonSchema.CodeGeneration;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -30,9 +29,9 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         public override string ToString()
         {
-            var html = ViewTempate.View(this);
-            var source = new HtmlParser().Parse(html).Body.InnerText;
-            return new CSharpCode(source, this.TypeName, this.Type).ToString();
+            var source = View.Text(this);
+            var code = new CSharpCode(source, this.TypeName, this.Type).ToString();
+            return code;
         }
     }
 }

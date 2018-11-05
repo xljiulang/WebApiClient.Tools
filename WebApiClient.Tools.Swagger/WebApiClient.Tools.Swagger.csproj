@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="AngleSharp" Version="0.9.10" />
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="RazorEngine" Version="3.10.0" />
     <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="11.20.1" />

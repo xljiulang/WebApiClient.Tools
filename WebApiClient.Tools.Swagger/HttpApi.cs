@@ -1,5 +1,4 @@
-﻿using AngleSharp.Parser.Html;
-using NJsonSchema.CodeGeneration;
+﻿using NJsonSchema.CodeGeneration;
 using NSwag;
 using NSwag.CodeGeneration.CSharp.Models;
 using System;
@@ -56,9 +55,9 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         public override string ToString()
         {
-            var html = ViewTempate.View(this);
-            var source = new HtmlParser().Parse(html).Body.InnerText;
-            return new CSharpCode(source, this.TypeName, CodeArtifactType.Interface).ToString();
+            var source = View.Text(this);
+            var code = new CSharpCode(source, this.TypeName, CodeArtifactType.Interface).ToString();
+            return code;
         }
     }
 }
