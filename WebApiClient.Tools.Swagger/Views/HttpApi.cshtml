@@ -41,7 +41,7 @@
                 <div>[HttpHost("@(Model.BaseUrl.TrimEnd('/'))/")]</div>
             }
         </attributes>
-        <div>public interface @(Model.Interface) : IHttpApi</div>
+        <div>public interface @(Model.TypeName) : IHttpApi</div>
         <div>{</div>
         @foreach (var method in Model.Operations)
         {

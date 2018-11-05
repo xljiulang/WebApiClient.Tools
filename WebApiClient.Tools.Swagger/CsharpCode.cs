@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NJsonSchema.CodeGeneration;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -11,27 +12,28 @@ namespace WebApiClient.Tools.Swagger
     /// 表示c#代码
     /// 自动代码美化
     /// </summary>
-    [DebuggerDisplay("Class = {Class}")]
-    public class CSharpCode
+    [DebuggerDisplay("TypeName = {TypeName}")]
+    public class CSharpCode : CodeArtifact
     {
         /// <summary>
-        /// 源代码
+        /// c#代码
         /// </summary>
-        private readonly string code;
-
-        /// <summary>
-        /// 代码声明的类型名称
-        /// </summary>
-        public string Class { get; private set; }
+        /// <param name="codeArtifact">源代码</param>
+        public CSharpCode(CodeArtifact codeArtifact)
+            : this(TransformCode(codeArtifact.Code), codeArtifact.TypeName, codeArtifact.Type)
+        {
+        }
 
         /// <summary>
         /// c#代码
         /// </summary>
         /// <param name="source">源代码</param>
-        public CSharpCode(string source)
+        /// <param name="typeName">类型名称</param>
+        /// <param name="type">类型分类</param>
+        public CSharpCode(string source, string typeName, CodeArtifactType type)
+            : base(typeName, type, CodeArtifactLanguage.CSharp)
         {
-            this.code = Pretty(source);
-            this.Class = Regex.Match(source, @"(?<=class |enum |interface )\w+").Value;
+            this.Code = Pretty(source);
         }
 
         /// <summary>
@@ -39,16 +41,52 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         public IEnumerable<string> Lines
         {
-            get => GetLines(this.code);
+            get => GetLines(this.Code);
         }
 
         /// <summary>
-        /// 转换为字符串
+        /// 转换为字符串代码
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return this.code;
+            return this.Code;
+        }
+
+        /// <summary>
+        /// 转换代码
+        /// 将NSwag生成的模型代码转换为WebApiClient的模型代码
+        /// </summary>
+        /// <param name="nswagCode"></param>
+        /// <returns></returns>
+        private static string TransformCode(string nswagCode)
+        {
+            var builder = new StringBuilder();
+            var lines = GetLines(nswagCode);
+
+            foreach (var line in lines)
+            {
+                if (line.Contains("System.CodeDom.Compiler.GeneratedCode"))
+                {
+                    continue;
+                }
+
+                var match = new Regex("(?<=Newtonsoft.Json.JsonProperty\\(\")\\w+(?=\")").Match(line);
+                if (match.Success == true)
+                {
+                    builder.AppendLine($"[AliasAs(\"{match.Value}\")]");
+                    continue;
+                }
+
+                var cleaned = line
+                    .Replace("partial class", "class")
+                    .Replace("System.Collections.Generic.", null)
+                    .Replace("System.ComponentModel.DataAnnotations.", null);
+
+                builder.AppendLine(cleaned);
+            }
+
+            return builder.ToString();
         }
 
         /// <summary>
@@ -123,7 +161,7 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         /// <param name="code">源代码</param>
         /// <returns></returns>
-        public static IEnumerable<string> GetLines(string code)
+        private static IEnumerable<string> GetLines(string code)
         {
             if (code == null)
             {

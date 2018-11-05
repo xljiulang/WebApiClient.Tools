@@ -1,4 +1,5 @@
 ﻿using AngleSharp.Parser.Html;
+using NJsonSchema.CodeGeneration;
 using NSwag;
 using NSwag.CodeGeneration.CSharp.Models;
 using System;
@@ -11,13 +12,13 @@ namespace WebApiClient.Tools.Swagger
     /// <summary>
     /// 表示WebApiClient的接口数据模型
     /// </summary>
-    [DebuggerDisplay("Interface = {Interface}")]
+    [DebuggerDisplay("TypeName = {TypeName}")]
     public class HttpApi : CSharpControllerTemplateModel
     {
         /// <summary>
         /// 获取接口名称
         /// </summary>
-        public string Interface { get; private set; }
+        public string TypeName { get; private set; }
 
         /// <summary>
         /// 获取文档描述
@@ -45,19 +46,19 @@ namespace WebApiClient.Tools.Swagger
             var tag = document.Tags
                 .FirstOrDefault(item => string.Equals(item.Name, className, StringComparison.OrdinalIgnoreCase));
 
-            this.Interface = $"I{this.Class}Api";
+            this.TypeName = $"I{this.Class}Api";
             this.Summary = tag?.Description;
         }
 
         /// <summary>
-        /// 转换为WebApiClient接口声明的c#代码
+        /// 转换为完整的代码
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
             var html = ViewTempate.View(this);
             var source = new HtmlParser().Parse(html).Body.InnerText;
-            return new CSharpCode(source).ToString();
+            return new CSharpCode(source, this.TypeName, CodeArtifactType.Interface).ToString();
         }
     }
 }

@@ -55,7 +55,7 @@ namespace WebApiClient.Tools.Swagger
                 name = Regex.Match(this.Id, @"\w*").Value;
                 if (string.IsNullOrEmpty(name))
                 {
-                    name = "unname";
+                    name = "unnamed";
                 }
 
                 var names = name.ToCharArray();

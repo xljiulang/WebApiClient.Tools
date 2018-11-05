@@ -74,26 +74,6 @@ namespace WebApiClient.Tools.Swagger
         }
 
         /// <summary>
-        /// 获取所有HttpApi描述模型
-        /// </summary>
-        /// <returns></returns>
-        public HttpApi[] GetHttpApis()
-        {
-            var provider = new HttpApiProvider(this);
-            return provider.GetHttpApiModels();
-        }
-
-        /// <summary>
-        /// 获取所有HttpModel描述模型
-        /// </summary>
-        /// <returns></returns>
-        public HttpModel[] GetHttpModels()
-        {
-            var provider = new HttpModelProvider(this);
-            return provider.GetHttpModels();
-        }
-
-        /// <summary>
         /// 生成代码并保存到文件
         /// </summary>
         public void GenerateFiles()
@@ -105,18 +85,18 @@ namespace WebApiClient.Tools.Swagger
             Directory.CreateDirectory(apisPath);
             Directory.CreateDirectory(modelsPath);
 
-            var apis = this.GetHttpApis();
+            var apis = new HttpApiProvider(this).GetHttpApis();
             foreach (var api in apis)
             {
-                var file = Path.Combine(apisPath, $"{api.Interface}.cs");
+                var file = Path.Combine(apisPath, $"{api.TypeName}.cs");
                 File.WriteAllText(file, api.ToString(), Encoding.UTF8);
                 Console.WriteLine($"输出接口文件：{file}");
             }
 
-            var models = this.GetHttpModels();
+            var models = new HttpModelProvider(this).GetHttpModels();
             foreach (var model in models)
             {
-                var file = Path.Combine(modelsPath, $"{model.Class}.cs");
+                var file = Path.Combine(modelsPath, $"{model.TypeName}.cs");
                 File.WriteAllText(file, model.ToString(), Encoding.UTF8);
                 Console.WriteLine($"输出模型文件：{file}");
             }
@@ -124,13 +104,20 @@ namespace WebApiClient.Tools.Swagger
             Console.WriteLine($"共输出{apis.Length + models.Length}个文件..");
         }
 
+
         /// <summary>
         /// 表示HttpApi提供者
         /// </summary>
         private class HttpApiProvider : SwaggerToCSharpControllerGenerator
         {
+            /// <summary>
+            /// swagger
+            /// </summary>
             private readonly Swagger swagger;
 
+            /// <summary>
+            /// api列表
+            /// </summary>
             private readonly List<HttpApi> httpApiList = new List<HttpApi>();
 
             /// <summary>
@@ -147,7 +134,7 @@ namespace WebApiClient.Tools.Swagger
             /// 获取所有HttpApi描述模型
             /// </summary>
             /// <returns></returns>
-            public HttpApi[] GetHttpApiModels()
+            public HttpApi[] GetHttpApis()
             {
                 this.httpApiList.Clear();
                 this.GenerateFile();
@@ -201,6 +188,9 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         private class HttpModelProvider : CSharpGenerator
         {
+            /// <summary>
+            /// swagger
+            /// </summary>
             private readonly Swagger swagger;
 
             /// <summary>
