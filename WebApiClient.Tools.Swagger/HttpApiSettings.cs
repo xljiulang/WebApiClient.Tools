@@ -130,7 +130,8 @@ namespace WebApiClient.Tools.Swagger
             public override string Generate(JsonSchema4 schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
             {
                 var prettyName = PrettyName(typeNameHint);
-                return base.Generate(schema, prettyName, reservedTypeNames);
+                var typeName = base.Generate(schema, prettyName, reservedTypeNames);
+                return typeName;
             }
 
             /// <summary>
@@ -140,6 +141,11 @@ namespace WebApiClient.Tools.Swagger
             /// <returns></returns>
             private static string PrettyName(string name)
             {
+                if (string.IsNullOrEmpty(name) == true)
+                {
+                    return name;
+                }
+
                 if (name.Contains("[]") == true)
                 {
                     name = name.Replace("[]", "Array");
