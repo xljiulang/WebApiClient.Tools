@@ -10,42 +10,19 @@ using System.Xml.Linq;
 namespace WebApiClient.Tools.Swagger
 {
     /// <summary>
-    /// 表示视图模板
+    /// 提供视图模板操作
     /// </summary>
-    [DebuggerDisplay("{TemplateFile}")]
-    class CSharpHtml : ITemplateSource
+    static class CSharpHtml
     {
         /// <summary>
-        /// razor引擎
+        /// 返回Views下的cshtml
         /// </summary>
-        private static readonly IRazorEngineService razor;
-
-        /// <summary>
-        /// 同步锁
-        /// </summary>
-        private static readonly object syncRoot = new object();
-
-        /// <summary>
-        /// 视图名称集合
-        /// </summary>
-        private static readonly HashSet<string> templateNames = new HashSet<string>();
-
-        /// <summary>
-        /// 块元素
-        /// </summary>
-        private static readonly HashSet<string> blockElements = new HashSet<string>(new[] { "div", "p" }, StringComparer.OrdinalIgnoreCase);
-
-        /// <summary>
-        /// 视图模板
-        /// </summary>
-        static CSharpHtml()
+        /// <param name="name">cshtml名称</param>
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <returns></returns>
+        public static CSharpHtml<T> Views<T>()
         {
-            var config = new TemplateServiceConfiguration
-            {
-                Debug = true,
-                CachingProvider = new DefaultCachingProvider(t => { })
-            };
-            razor = RazorEngineService.Create(config);
+            return Views<T>(typeof(T).Name);
         }
 
         /// <summary>
@@ -55,7 +32,7 @@ namespace WebApiClient.Tools.Swagger
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="FileNotFoundException"></exception>
         /// <returns></returns>
-        public static CSharpHtml Views(string name)
+        public static CSharpHtml<T> Views<T>(string name)
         {
             if (string.IsNullOrEmpty(name))
             {
@@ -63,13 +40,25 @@ namespace WebApiClient.Tools.Swagger
             }
 
             var path = $"Views\\{name}";
-            return new CSharpHtml(path);
+            return new CSharpHtml<T>(path);
         }
+    }
 
+    /// <summary>
+    /// 表示视图模板
+    /// </summary>
+    [DebuggerDisplay("{TemplateFile}")]
+    class CSharpHtml<T> : ITemplateSource
+    {
         /// <summary>
         /// 模板内容
         /// </summary>
         private readonly Lazy<string> template;
+
+        /// <summary>
+        /// 获取模板内容
+        /// </summary>
+        public string Template => this.template.Value;
 
         /// <summary>
         /// 获取模板文件路径
@@ -77,9 +66,9 @@ namespace WebApiClient.Tools.Swagger
         public string TemplateFile { get; private set; }
 
         /// <summary>
-        /// 获取模板内容
+        /// 块元素
         /// </summary>
-        public string Template => this.template.Value;
+        public HashSet<string> BlockElements { get; private set; }
 
         /// <summary>
         /// 视图模板
@@ -104,8 +93,9 @@ namespace WebApiClient.Tools.Swagger
                 throw new FileNotFoundException(path);
             }
 
-            this.TemplateFile = Path.GetFullPath(path);
             this.template = new Lazy<string>(this.ReadTemplate);
+            this.TemplateFile = Path.GetFullPath(path);
+            this.BlockElements = new HashSet<string>(new[] { "p", "div" }, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -138,22 +128,13 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="model">模型</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns></returns>
-        public string RenderHtml(object model)
+        public string RenderHtml(T model)
         {
             if (model == null)
             {
                 throw new ArgumentNullException(nameof(model));
             }
-
-            lock (syncRoot)
-            {
-                if (templateNames.Add(this.TemplateFile) == true)
-                {
-                    razor.AddTemplate(this.TemplateFile, this);
-                    razor.Compile(this.TemplateFile);
-                }
-            }
-            return razor.RunCompile(this.TemplateFile, model.GetType(), model);
+            return Razor.RunCompile(this.TemplateFile, this, model);
         }
 
         /// <summary>
@@ -162,7 +143,7 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="model">模型</param>
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns></returns>
-        public string RenderText(object model)
+        public string RenderText(T model)
         {
             if (model == null)
             {
@@ -176,13 +157,12 @@ namespace WebApiClient.Tools.Swagger
             return builder.ToString();
         }
 
-
         /// <summary>
         /// 装载元素的文本
         /// </summary>
         /// <param name="element"></param>
         /// <param name="builder"></param>
-        private static void RenderText(XElement element, StringBuilder builder)
+        private void RenderText(XElement element, StringBuilder builder)
         {
             if (element.HasElements == true)
             {
@@ -199,7 +179,7 @@ namespace WebApiClient.Tools.Swagger
                 return;
             }
 
-            if (blockElements.Contains(element.Name.ToString()))
+            if (this.BlockElements.Contains(element.Name.ToString()))
             {
                 builder.AppendLine().Append(text);
                 if (element.NextNode == null)
@@ -214,6 +194,67 @@ namespace WebApiClient.Tools.Swagger
                 {
                     builder.Append(" ");
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// 表示Rozor引擎
+        /// </summary>
+        static class Razor
+        {
+            /// <summary>
+            /// razor引擎
+            /// </summary>
+            private static readonly IRazorEngineService razor;
+
+            /// <summary>
+            /// 同步锁
+            /// </summary>
+            private static readonly object syncRoot = new object();
+
+            /// <summary>
+            /// 视图名称集合
+            /// </summary>
+            private static readonly HashSet<string> templateNames = new HashSet<string>();
+
+            /// <summary>
+            /// 视图模板
+            /// </summary>
+            static Razor()
+            {
+                var config = new TemplateServiceConfiguration
+                {
+                    Debug = true,
+                    CachingProvider = new DefaultCachingProvider(t => { })
+                };
+                razor = RazorEngineService.Create(config);
+            }
+
+            /// <summary>
+            /// 编译并执行
+            /// </summary>
+            /// <param name="name">模板名称</param>
+            /// <param name="source">模板提供者</param>
+            /// <param name="model">模型</param>
+            /// <returns></returns>
+            public static string RunCompile(string name, ITemplateSource source, object model)
+            {
+                if (model == null)
+                {
+                    throw new ArgumentNullException(nameof(model));
+                }
+
+                lock (syncRoot)
+                {
+                    if (templateNames.Add(name) == true)
+                    {
+                        razor.AddTemplate(name, source);
+                        razor.Compile(name);
+                    }
+                }
+
+                return razor.RunCompile(name, model.GetType(), model);
             }
         }
     }

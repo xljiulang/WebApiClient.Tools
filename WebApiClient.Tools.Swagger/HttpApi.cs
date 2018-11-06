@@ -55,7 +55,7 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         public override string ToString()
         {
-            var cshtml = CSharpHtml.Views(nameof(HttpApi));
+            var cshtml = CSharpHtml.Views<HttpApi>();
             var source = cshtml.RenderText(this);
             return new CSharpCode(source, this.TypeName, CodeArtifactType.Interface).ToString();
         }
