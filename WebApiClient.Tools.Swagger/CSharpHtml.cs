@@ -12,7 +12,7 @@ namespace WebApiClient.Tools.Swagger
     /// <summary>
     /// 表示视图模板
     /// </summary>
-    [DebuggerDisplay("{Path}")]
+    [DebuggerDisplay("{TemplateFile}")]
     class CSharpHtml : ITemplateSource
     {
         /// <summary>
@@ -42,7 +42,7 @@ namespace WebApiClient.Tools.Swagger
         {
             var config = new TemplateServiceConfiguration
             {
-                Debug = false,
+                Debug = true,
                 CachingProvider = new DefaultCachingProvider(t => { })
             };
             razor = RazorEngineService.Create(config);
@@ -53,6 +53,7 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         /// <param name="name">cshtml名称</param>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         /// <returns></returns>
         public static CSharpHtml Views(string name)
         {
@@ -61,10 +62,9 @@ namespace WebApiClient.Tools.Swagger
                 throw new ArgumentNullException(nameof(name));
             }
 
-            var path = $"Views.{name}";
+            var path = $"Views\\{name}";
             return new CSharpHtml(path);
         }
-
 
         /// <summary>
         /// 模板内容
@@ -72,31 +72,21 @@ namespace WebApiClient.Tools.Swagger
         private readonly Lazy<string> template;
 
         /// <summary>
-        /// 获取cshtml资源路径
+        /// 获取模板文件路径
         /// </summary>
-        public string Path { get; private set; }
+        public string TemplateFile { get; private set; }
 
         /// <summary>
         /// 获取模板内容
         /// </summary>
-        public string Template
-        {
-            get => this.template.Value;
-        }
-
-        /// <summary>
-        /// 获取模板文件路径
-        /// </summary>
-        public string TemplateFile
-        {
-            get => null;
-        }
+        public string Template => this.template.Value;
 
         /// <summary>
         /// 视图模板
         /// </summary>
-        /// <param name="path">资源路径</param>
+        /// <param name="path">cshtml文件路径</param>
         /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="FileNotFoundException"></exception>
         public CSharpHtml(string path)
         {
             if (string.IsNullOrEmpty(path))
@@ -104,12 +94,17 @@ namespace WebApiClient.Tools.Swagger
                 throw new ArgumentNullException(nameof(path));
             }
 
-            if (path.EndsWith(".cshtml", StringComparison.OrdinalIgnoreCase) == false)
+            if (string.IsNullOrEmpty(Path.GetExtension(path)))
             {
-                path = $"{path}.cshtml";
+                path = Path.ChangeExtension(path, ".cshtml");
             }
 
-            this.Path = path;
+            if (File.Exists(path) == false)
+            {
+                throw new FileNotFoundException(path);
+            }
+
+            this.TemplateFile = Path.GetFullPath(path);
             this.template = new Lazy<string>(this.ReadTemplate);
         }
 
@@ -119,10 +114,12 @@ namespace WebApiClient.Tools.Swagger
         /// <returns></returns>
         private string ReadTemplate()
         {
-            var fullPath = $"{typeof(CSharpHtml).Namespace}.{this.Path}";
-            using (var stream = typeof(CSharpHtml).Assembly.GetManifestResourceStream(fullPath))
+            using (var stream = new FileStream(this.TemplateFile, FileMode.Open))
             {
-                return new StreamReader(stream).ReadToEnd();
+                using (var reader = new StreamReader(stream))
+                {
+                    return reader.ReadToEnd();
+                }
             }
         }
 
@@ -150,13 +147,13 @@ namespace WebApiClient.Tools.Swagger
 
             lock (syncRoot)
             {
-                if (templateNames.Add(this.Path) == true)
+                if (templateNames.Add(this.TemplateFile) == true)
                 {
-                    razor.AddTemplate(this.Path, this);
-                    razor.Compile(this.Path);
+                    razor.AddTemplate(this.TemplateFile, this);
+                    razor.Compile(this.TemplateFile);
                 }
             }
-            return razor.RunCompile(this.Path, model.GetType(), model);
+            return razor.RunCompile(this.TemplateFile, model.GetType(), model);
         }
 
         /// <summary>
