@@ -11,7 +11,7 @@
   --help                                 Display this help screen.
 ```
 ### 1.2 工作流程
-1. 使用NSwag解析json得到SwaggerDocument
+1. 使用NSwag解析swagger的json得到SwaggerDocument对象
 2. 使用RazorEngine将SwaggerDocument传入cshtml模板编译得到html
-3. 使用AngleSharp将html的文本代码提取，得到WebApiClient的声明式代码
+3. 使用XDocument将html的文本代码提取，得到WebApiClient的声明式代码
 4. 代码美化，输出到本地文件
