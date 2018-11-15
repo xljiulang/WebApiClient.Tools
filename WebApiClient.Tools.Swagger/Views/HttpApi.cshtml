@@ -97,7 +97,18 @@
                                 <span>[AliasAs("@(parameter.Name)")]</span>
                             }
 
-                            if (parameter.Kind == SwaggerParameterKind.Header)
+                            if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
+                            {
+                                var schema = parameter.Schema as NSwag.SwaggerParameter;
+                                if (schema.CollectionFormat != SwaggerParameterCollectionFormat.Undefined)
+                                {
+                                    if (schema.CollectionFormat != SwaggerParameterCollectionFormat.Multi)
+                                    {
+                                        <span>[PathQuery(CollectionFormat = CollectionFormat.@(schema.CollectionFormat))]</span>
+                                    }
+                                }
+                            }
+                            else if (parameter.Kind == SwaggerParameterKind.Header)
                             {
                                 <span>[Header("@(parameter.Name)")]</span>
                             }
