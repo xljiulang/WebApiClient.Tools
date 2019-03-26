@@ -92,7 +92,7 @@
                                 <span>[Required]</span>
                             }
 
-                            if (parameter.VariableName != parameter.Name)
+                            if (parameter.VariableName != parameter.Name&& parameter.Kind != SwaggerParameterKind.Header)
                             {
                                 <span>[AliasAs("@(parameter.Name)")]</span>
                             }
