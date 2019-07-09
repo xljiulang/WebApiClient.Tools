@@ -100,10 +100,12 @@
                             if (parameter.Kind == SwaggerParameterKind.Path || parameter.Kind == SwaggerParameterKind.Query)
                             {
                                 var schema = parameter.Schema as NSwag.SwaggerParameter;
-                                if (schema != null && schema.CollectionFormat != SwaggerParameterCollectionFormat.Undefined 
-                                    && schema.CollectionFormat != SwaggerParameterCollectionFormat.Multi)
+                                if (schema.CollectionFormat != SwaggerParameterCollectionFormat.Undefined)
                                 {
-                                    <span>[PathQuery(CollectionFormat = CollectionFormat.@(schema.CollectionFormat))]</span>
+                                    if (schema.CollectionFormat != SwaggerParameterCollectionFormat.Multi)
+                                    {
+                                        <span>[PathQuery(CollectionFormat = CollectionFormat.@(schema.CollectionFormat))]</span>
+                                    }
                                 }
                             }
                             else if (parameter.Kind == SwaggerParameterKind.Header)
