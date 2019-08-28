@@ -1,10 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Text.RegularExpressions;
-using NJsonSchema;
+﻿using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration.CSharp;
 using NSwag.CodeGeneration.CSharp.Models;
+using System.Text.RegularExpressions;
 
 namespace WebApiClient.Tools.Swagger
 {
@@ -20,7 +19,7 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="settings">设置项</param>
         /// <param name="generator">代码生成器</param>
         /// <param name="resolver">语法解析器</param>
-        public HttpApiMethod(SwaggerOperation operation, SwaggerToCSharpGeneratorSettings settings, SwaggerToCSharpGeneratorBase generator, CSharpTypeResolver resolver)
+        public HttpApiMethod(OpenApiOperation operation, CSharpGeneratorBaseSettings settings, CSharpGeneratorBase generator, CSharpTypeResolver resolver)
             : base(operation, settings, generator, resolver)
         {
         }
@@ -70,12 +69,12 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         /// <param name="parameter">参数</param>
         /// <returns></returns>
-        protected override string ResolveParameterType(SwaggerParameter parameter)
+        protected override string ResolveParameterType(OpenApiParameter parameter)
         {
             var schema = parameter.ActualSchema;
             if (schema.Type == JsonObjectType.File)
             {
-                if (parameter.CollectionFormat == SwaggerParameterCollectionFormat.Multi && !schema.Type.HasFlag(JsonObjectType.Array))
+                if (parameter.CollectionFormat == OpenApiParameterCollectionFormat.Multi && !schema.Type.HasFlag(JsonObjectType.Array))
                 {
                     return "IEnumerable<MulitpartFile>";
                 }

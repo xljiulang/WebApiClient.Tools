@@ -10,6 +10,10 @@
     <Summary>将swagger的本地或远程json文件解析生成WebApiClient的接口定义代码文件的工具</Summary>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <Compile Remove="output\**" />
     <EmbeddedResource Remove="output\**" />
@@ -19,7 +23,7 @@
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="1.9.71" />
     <PackageReference Include="RazorEngine" Version="3.10.0" />
-    <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="11.20.1" />
+    <PackageReference Include="NSwag.CodeGeneration.CSharp" Version="13.0.6" />
   </ItemGroup>
 
   <ItemGroup>

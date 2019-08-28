@@ -31,9 +31,8 @@ namespace WebApiClient.Tools.Swagger
         /// <param name="typeName">类型名称</param>
         /// <param name="type">类型分类</param>
         public CSharpCode(string source, string typeName, CodeArtifactType type)
-            : base(typeName, type, CodeArtifactLanguage.CSharp)
+            : base(typeName, type, CodeArtifactLanguage.CSharp, CodeArtifactCategory.Undefined, Pretty(source))
         {
-            this.Code = Pretty(source);
         }
 
         /// <summary>

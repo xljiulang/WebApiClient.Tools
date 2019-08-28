@@ -1,4 +1,5 @@
-﻿using NJsonSchema.CodeGeneration.CSharp;
+﻿using NJsonSchema.CodeGeneration;
+using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
@@ -21,7 +22,7 @@ namespace WebApiClient.Tools.Swagger
         /// <summary>
         /// 获取Swagger文档
         /// </summary>
-        public SwaggerDocument Document { get; private set; }
+        public OpenApiDocument Document { get; private set; }
 
         /// <summary>
         /// 获取Swagger设置项
@@ -37,7 +38,7 @@ namespace WebApiClient.Tools.Swagger
         {
             if (string.IsNullOrEmpty(options.Namespace) == false)
             {
-                this.Settings.AspNetNamespace = options.Namespace;
+                this.Settings.NameSpace = options.Namespace;             
                 this.Settings.CSharpGeneratorSettings.Namespace = options.Namespace;
             }
         }
@@ -46,12 +47,12 @@ namespace WebApiClient.Tools.Swagger
         /// Swagger描述
         /// </summary>
         /// <param name="document">Swagger文档</param>
-        public Swagger(SwaggerDocument document)
+        public Swagger(OpenApiDocument document)
         {
             this.Document = document;
             this.Settings = new HttpApiSettings();
 
-            this.resolver = SwaggerToCSharpGeneratorBase
+            this.resolver = CSharpGeneratorBase
                 .CreateResolverWithExceptionSchema(this.Settings.CSharpGeneratorSettings, document);
         }
 
@@ -60,16 +61,16 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         /// <param name="swagger"></param>
         /// <returns></returns>
-        private static SwaggerDocument GetDocument(string swagger)
+        private static OpenApiDocument GetDocument(string swagger)
         {
             Console.WriteLine($"正在分析swagger：{swagger}");
             if (Uri.TryCreate(swagger, UriKind.Absolute, out var _) == true)
             {
-                return SwaggerDocument.FromUrlAsync(swagger).Result;
+                return OpenApiDocument.FromUrlAsync(swagger).Result;
             }
             else
             {
-                return SwaggerDocument.FromFileAsync(swagger).Result;
+                return OpenApiDocument.FromFileAsync(swagger).Result;
             }
         }
 
@@ -78,7 +79,7 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         public void GenerateFiles()
         {
-            var dir = Path.Combine("output", this.Settings.AspNetNamespace);
+            var dir = Path.Combine("output", this.Settings.NameSpace);
             var apisPath = Path.Combine(dir, "HttpApis");
             var modelsPath = Path.Combine(dir, "HttpModels");
 
@@ -108,7 +109,7 @@ namespace WebApiClient.Tools.Swagger
         /// <summary>
         /// 表示HttpApi提供者
         /// </summary>
-        private class HttpApiProvider : SwaggerToCSharpControllerGenerator
+        private class HttpApiProvider : CSharpControllerGenerator
         {
             /// <summary>
             /// swagger
@@ -148,24 +149,24 @@ namespace WebApiClient.Tools.Swagger
             /// <param name="controllerName"></param>
             /// <param name="controllerClassName"></param>
             /// <param name="operations"></param>
-            /// <param name="outputType"></param>
             /// <returns></returns>
-            protected override string GenerateClientClass(string controllerName, string controllerClassName, IList<CSharpOperationModel> operations, ClientGeneratorOutputType outputType)
+            protected override IEnumerable<CodeArtifact> GenerateClientTypes(string controllerName, string controllerClassName, IEnumerable<CSharpOperationModel> operations)
             {
                 var model = new HttpApi(controllerClassName, operations, this.swagger.Document, this.swagger.Settings);
                 this.httpApiList.Add(model);
-                return string.Empty;
+                return new CodeArtifact[0];
             }
+
 
             /// <summary>
             /// 生成文件
             /// 这里不生成
             /// </summary>
-            /// <param name="clientCode"></param>
-            /// <param name="clientClasses"></param>
+            /// <param name="clientTypes"></param>
+            /// <param name="dtoTypes"></param>
             /// <param name="outputType"></param>
             /// <returns></returns>
-            protected override string GenerateFile(string clientCode, IEnumerable<string> clientClasses, ClientGeneratorOutputType outputType)
+            protected override string GenerateFile(IEnumerable<CodeArtifact> clientTypes, IEnumerable<CodeArtifact> dtoTypes, ClientGeneratorOutputType outputType)
             {
                 return string.Empty;
             }
@@ -177,9 +178,9 @@ namespace WebApiClient.Tools.Swagger
             /// <param name="operation"></param>
             /// <param name="settings"></param>
             /// <returns></returns>
-            protected override CSharpOperationModel CreateOperationModel(SwaggerOperation operation, ClientGeneratorBaseSettings settings)
+            protected override CSharpOperationModel CreateOperationModel(OpenApiOperation operation, ClientGeneratorBaseSettings settings)
             {
-                return new HttpApiMethod(operation, (SwaggerToCSharpGeneratorSettings)settings, this, (CSharpTypeResolver)Resolver);
+                return new HttpApiMethod(operation, (CSharpGeneratorBaseSettings)settings, this, (CSharpTypeResolver)Resolver);
             }
         }
 
@@ -210,8 +211,7 @@ namespace WebApiClient.Tools.Swagger
             public HttpModel[] GetHttpModels()
             {
                 return this.GenerateTypes()
-                    .Artifacts
-                    .Select(item => new HttpModel(item, this.swagger.Settings.AspNetNamespace))
+                    .Select(item => new HttpModel(item, this.swagger.Settings.NameSpace))
                     .ToArray();
             }
         }

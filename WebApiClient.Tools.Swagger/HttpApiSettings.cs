@@ -14,8 +14,13 @@ namespace WebApiClient.Tools.Swagger
     /// <summary>
     /// 表示WebApiClient接口设置模型
     /// </summary>
-    public class HttpApiSettings : SwaggerToCSharpControllerGeneratorSettings
+    public class HttpApiSettings : CSharpControllerGeneratorSettings
     {
+        /// <summary>
+        /// 获取或设置命名空间
+        /// </summary>
+        public string NameSpace { get; set; } = "WebApiClient";
+
         /// <summary>
         /// WebApiClient接口设置模型
         /// </summary>
@@ -26,7 +31,6 @@ namespace WebApiClient.Tools.Swagger
             this.ParameterArrayType = "IEnumerable";
             this.ParameterDictionaryType = "IDictionary";
 
-            this.AspNetNamespace = this.GetType().Namespace;
             this.OperationNameGenerator = new OperationNameProvider();
             this.ParameterNameGenerator = new ParameterNameProvider();
             this.CSharpGeneratorSettings.TypeNameGenerator = new TypeNameProvider();
@@ -48,7 +52,7 @@ namespace WebApiClient.Tools.Swagger
             /// <param name="httpMethod"></param>
             /// <param name="operation"></param>
             /// <returns></returns>
-            public override string GetClientName(SwaggerDocument document, string path, SwaggerOperationMethod httpMethod, SwaggerOperation operation)
+            public override string GetClientName(OpenApiDocument document, string path, string httpMethod, OpenApiOperation operation)
             {
                 return operation.Tags.FirstOrDefault();
             }
@@ -65,7 +69,7 @@ namespace WebApiClient.Tools.Swagger
             /// <param name="parameter"></param>
             /// <param name="allParameters"></param>
             /// <returns></returns>
-            public string Generate(SwaggerParameter parameter, IEnumerable<SwaggerParameter> allParameters)
+            public string Generate(OpenApiParameter parameter, IEnumerable<OpenApiParameter> allParameters)
             {
                 if (string.IsNullOrEmpty(parameter.Name))
                 {
@@ -127,7 +131,7 @@ namespace WebApiClient.Tools.Swagger
         /// </summary>
         private class TypeNameProvider : DefaultTypeNameGenerator
         {
-            public override string Generate(JsonSchema4 schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
+            public override string Generate(JsonSchema schema, string typeNameHint, IEnumerable<string> reservedTypeNames)
             {
                 var prettyName = PrettyName(typeNameHint);
                 var typeName = base.Generate(schema, prettyName, reservedTypeNames);
